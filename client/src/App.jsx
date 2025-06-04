@@ -5,14 +5,11 @@ import './App.css'
 import Login from './components/Login/Login.jsx'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-    <Login/>
-      
-    </>
-  )
+    <div className="h-screen flex justify-center items-center bg-black text-white">
+      <h1 className="text-5xl font-bold text-green-400">Tailwind has been installed 🎯</h1>
+    </div>
+  );
 }
 
-export default App
+export default App;
