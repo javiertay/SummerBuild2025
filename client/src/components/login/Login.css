@@ -1,0 +1,155 @@
+.container {
+    background: white;
+    height: 340px;
+    width: 520px;
+    margin: 0 auto;
+    border-radius: 5px;
+    box-shadow: 0px 4px 30px -5px rgba(0,0,0,0.65);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+  
+.input-container {
+    position: relative;
+    margin-bottom: 10px;
+    width: 340px; 
+}
+  
+.form-input, .submit-button {
+    font-family: 'Dosis', sans-serif;
+    letter-spacing: 1.3px; 
+}
+  
+.form-input {
+    box-sizing: border-box;
+    background: transparent;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #626571;
+    color: #90949e;
+    padding: 12px 6px 12px 36px;
+    font-size: 19px;
+    outline: none;
+}
+
+.form-input:focus {
+    border-bottom: 1px solid transparent;
+    border-image: linear-gradient(140deg, #30eb49 0%, #15ff00 100%);
+    border-image-slice: 1; 
+}
+  
+.form-input:focus + i {
+    color: #000; 
+}
+  
+::placeholder {
+    color: #000;
+    opacity: .4; 
+}
+  
+.fa-user, .fa-lock {
+    color: #626571;
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: color .3s; 
+}
+
+.end {
+    color: #626571;
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: color .3s;
+}
+  
+.submit-button {
+    background: #33343b;
+    border: none;
+    border-radius: 30px;
+    color: #ccced3;
+    font-size: 16px;
+    padding: 16px 36px;
+    cursor: pointer;
+    transition: all .3s;
+    margin-top: 20px;
+    margin-bottom: -30px;
+    box-shadow: 0px 4px 15px -5px rgba(0, 0, 0, 0.65);
+    transition: all .3s; 
+    width: 340px;
+}
+  
+.submit-button:hover {
+    background: #3f4048;
+    box-shadow: 0px 5px 20px -3px rgba(0, 0, 0, 0.65); 
+}
+  
+.warning, #error {
+    color: red;
+}
+
+/*
+@media screen and (max-width: 620px) {
+    .container {
+      min-height: 300px;
+      max-height: 420px;
+      width: 90vw; 
+    }
+
+    .input-container {
+      width: 80%;
+      margin-bottom: 40px; 
+    }
+    
+    .submit-button {
+      margin-top: 10px;
+      margin-bottom: -20px; 
+    } 
+}
+   */
+
+.left {
+    display: block;
+    width: 60vw;
+  height: 100vh;
+  position: fixed;
+  background: url('../../images/background.jpg') no-repeat center;
+  background-size: cover;
+  /* background-position: center 30%; */
+}
+
+.right {
+    display: flex;
+    justify-content : center;
+    align-items : center;
+    width: 40vw;
+    height: 100vh;
+  margin-left: 60vw;
+  padding: 4em 1.5em;
+  overflow: hidden;
+}
+
+.title {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    color: white;
+}
+
+
+/* Responsive Display*/
+@media screen and (max-width: 768px) {
+    .left{
+        display: none;
+    }
+
+    .right {
+        width: auto;
+        margin-left: auto;
+      /* background: url('../../images/shell.jpg') no-repeat center; */
+    }
+}
