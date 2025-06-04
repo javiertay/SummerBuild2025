@@ -1,3 +1,4 @@
+
 .container {
     background: white;
     height: 340px;
@@ -92,34 +93,14 @@
     color: red;
 }
 
-/*
-@media screen and (max-width: 620px) {
-    .container {
-      min-height: 300px;
-      max-height: 420px;
-      width: 90vw; 
-    }
-
-    .input-container {
-      width: 80%;
-      margin-bottom: 40px; 
-    }
-    
-    .submit-button {
-      margin-top: 10px;
-      margin-bottom: -20px; 
-    } 
-}
-   */
-
 .left {
     display: block;
     width: 60vw;
-  height: 100vh;
-  position: fixed;
-  background: url('../../images/background.jpg') no-repeat center;
-  background-size: cover;
-  /* background-position: center 30%; */
+	height: 100vh;
+	position: fixed;
+	background: url('../../images/background.jpg') no-repeat center;
+	background-size: cover;
+	/* background-position: center 30%; */
 }
 
 .right {
@@ -128,9 +109,9 @@
     align-items : center;
     width: 40vw;
     height: 100vh;
-  margin-left: 60vw;
-  padding: 4em 1.5em;
-  overflow: hidden;
+	margin-left: 60vw;
+	padding: 4em 1.5em;
+	overflow: hidden;
 }
 
 .title {
@@ -150,6 +131,6 @@
     .right {
         width: auto;
         margin-left: auto;
-      /* background: url('../../images/shell.jpg') no-repeat center; */
+	    /* background: url('../../images/shell.jpg') no-repeat center; */
     }
 }
