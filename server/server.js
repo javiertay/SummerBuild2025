@@ -16,18 +16,23 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // MongoDB connection
-const MONGODB_URI = 'mongodb://127.0.0.1:27017/summerbuild2025';
+const MONGODB_URI = 'mongodb+srv://perr0003:5UMDFlaf5FkVQwCX@cluster0.0evl96w.mongodb.net/InternshipTracker?retryWrites=true&w=majority&appName=Cluster0';
 
 console.log('Connecting to MongoDB...');
-mongoose.connect(MONGODB_URI, {
-  // Remove auth options and simplify for local development
-})
+mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('✅ Connected to MongoDB successfully');
+    // Log the database name to verify connection
+    console.log(`📊 Database name: ${mongoose.connection.db.databaseName}`);
+    
+    // List collections to confirm access
+    mongoose.connection.db.listCollections().toArray()
+      .then(collections => {
+        console.log('📚 Available collections:', collections.map(c => c.name).join(', '));
+      });
   })
   .catch((error) => {
     console.error('❌ MongoDB connection error:', error.message);
-    console.error('Please check your MongoDB is running and network connection.');
   });
 
 app.use(cors());

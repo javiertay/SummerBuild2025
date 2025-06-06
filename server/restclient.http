@@ -3,8 +3,8 @@ POST http://localhost:3000/api/users/register
 Content-Type: application/json
 
 {
-  "username": "llogdama",
-  "email": "heheidi@example.com",
+  "username": "googoog",
+  "email": "Cappucina@example.com",
   "password": "blahH@1234"
 }
 
@@ -77,7 +77,7 @@ Content-Type: application/json
 }
 
 ### Update User
-PATCH http://localhost:3000/api/users/64532bf7a9d3c2bd6b6b6843
+PATCH http://localhost:3000/api/users/6842c589281ff073f144664d
 Content-Type: application/json
 
 {
@@ -85,7 +85,7 @@ Content-Type: application/json
 }
 
 ### Update Email
-PATCH http://localhost:3000/api/users/64532bf7a9d3c2bd6b6b6843
+PATCH http://localhost:3000/api/users/6842c589281ff073f144664d
 Content-Type: application/json
 
 {
@@ -93,7 +93,7 @@ Content-Type: application/json
 }
 
 ### Update Password
-PATCH http://localhost:3000/api/users/64532bf7a9d3c2bd6b6b6843
+PATCH http://localhost:3000/api/users/6842c589281ff073f144664d
 Content-Type: application/json
 
 {
@@ -102,7 +102,7 @@ Content-Type: application/json
 }
 
 ### Multiple Updates
-PATCH http://localhost:3000/api/users/64532bf7a9d3c2bd6b6b6843
+PATCH http://localhost:3000/api/users/6842c589281ff073f144664d
 Content-Type: application/json
 
 {

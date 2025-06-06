@@ -65,7 +65,7 @@ export const update = async (req, res) => {
         const { username, email, currentPassword, newPassword } = req.body;
         
         // Find the user
-        const user = await User.findById(userId).select('+password');
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({
                 success: false,
