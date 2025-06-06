@@ -1,6 +1,6 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
-exports.loginSchema = Joi.object({
+export const loginSchema = Joi.object({
     username: Joi.string()
         .trim()
         .min(3)

@@ -1,0 +1,77 @@
+### Register a new user
+POST http://localhost:3000/api/users/register
+Content-Type: application/json
+
+{
+  "username": "newuser",
+  "email": "new@example.com",
+  "password": "blahhH@1234"
+}
+
+### Test with invalid data (missing username)
+POST http://localhost:3000/api/users/register
+Content-Type: application/json
+
+{
+  "email": "test2@example.com",
+  "password": "Test@1234"
+}
+
+### Test with invalid password (missing special character)
+POST http://localhost:3000/api/users/register
+Content-Type: application/json
+
+{
+  "username": "testuser2",
+  "email": "test2@example.com",
+  "password": "Test1234"
+}
+
+### Test with invalid email format
+POST http://localhost:3000/api/users/register
+Content-Type: application/json
+
+{
+  "username": "testuser3",
+  "email": "invalidemail",
+  "password": "Test@1234"
+}
+
+### Test with short username (less than 3 characters)
+POST http://localhost:3000/api/users/register
+Content-Type: application/json
+
+{
+  "username": "ab",
+  "email": "test3@example.com",
+  "password": "Test@1234"
+}
+
+### Test duplicate email (run the first request first, then this one)
+POST http://localhost:3000/api/users/register
+Content-Type: application/json
+
+{
+  "username": "differentuser",
+  "email": "test@example.com",
+  "password": "Different@1234"
+}
+
+### Test login (after creating a user)
+POST http://localhost:3000/api/users/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Test@1234"
+}
+
+### Test with password exceeding maximum length
+POST http://localhost:3000/api/users/register
+Content-Type: application/json
+
+{
+  "username": "longpwduser",
+  "email": "longpwd@example.com",
+  "password": "ThisIsAVeryLongPassword@1234"
+}
