@@ -3,9 +3,9 @@ POST http://localhost:3000/api/users/register
 Content-Type: application/json
 
 {
-  "username": "newuser",
-  "email": "new@example.com",
-  "password": "blahhH@1234"
+  "username": "llogdama",
+  "email": "heheidi@example.com",
+  "password": "blahH@1234"
 }
 
 ### Test with invalid data (missing username)
@@ -74,4 +74,40 @@ Content-Type: application/json
   "username": "longpwduser",
   "email": "longpwd@example.com",
   "password": "ThisIsAVeryLongPassword@1234"
+}
+
+### Update User
+PATCH http://localhost:3000/api/users/64532bf7a9d3c2bd6b6b6843
+Content-Type: application/json
+
+{
+    "username": "newusername" 
+}
+
+### Update Email
+PATCH http://localhost:3000/api/users/64532bf7a9d3c2bd6b6b6843
+Content-Type: application/json
+
+{
+    "email": "newemail@example.com"
+}
+
+### Update Password
+PATCH http://localhost:3000/api/users/64532bf7a9d3c2bd6b6b6843
+Content-Type: application/json
+
+{
+    "currentPassword": "Oldpassword123!",
+    "newPassword": "Newpassword456!"
+}
+
+### Multiple Updates
+PATCH http://localhost:3000/api/users/64532bf7a9d3c2bd6b6b6843
+Content-Type: application/json
+
+{
+    "username": "brandnewname",
+    "email": "brand@new.email",
+    "currentPassword": "Oldpassword123!",
+    "newPassword": "Newpassword456!"
 }

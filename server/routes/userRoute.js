@@ -1,24 +1,21 @@
 import express from "express";
-import { create } from "../controllers/userController.js";
-import { loginSchema } from "../middleware/validator.js";
+import {create, login, update} from "../controllers/userController.js";
+import {registerSchema, loginSchema, updateSchema} from "../middleware/validateLogin.js";
+import {validateRequest} from "../middleware/validateRequest.js";
+import {checkUserExist} from "../middleware/checkUserExist.js";
 
 const route = express.Router();
 
-// Middleware to validate request body
-const validateRequest = (schema) => {
-  return (req, res, next) => {
-    const { error } = schema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ 
-        success: false,
-        message: error.details[0].message 
-      });
-    }
-    next();
-  };
-};
+// Registration route with validation
+route.post("/register", validateRequest(registerSchema), checkUserExist, create);
 
-// Route with validation
-route.post("/register", validateRequest(loginSchema), create);
+// Login route with validation
+route.post("/login", validateRequest(loginSchema), login);
+
+// Edit route
+route.patch("/users/:id", validateRequest(updateSchema), update);
+
+// Delete route
+
 
 export default route;
