@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import AddEntryModal from "./AddEntryModal"; // adjust path as needed
+import AddEntryModal from "../components/AddEntryModal"; // adjust path as needed
 
 const InternshipTable = () => {
   const [applications, setApplications] = useState([]);

@@ -1,8 +1,17 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import loginImage from "../assets/loginImage.svg";
 
 const Login2 = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    navigate("/dashboard");
+  }
 
   return (
     <div className="min-h-screen flex bg-[#f8f4f3] font-sans text-gray-900">
@@ -30,7 +39,7 @@ const Login2 = () => {
             Login
             </h2>
 
-          <form>
+          <form onSubmit={handleSubmit}>
             {/* Email */}
             <div className="mb-4">
               <label
@@ -44,7 +53,10 @@ const Login2 = () => {
                 id="email"
                 name="email"
                 placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full border border-gray-300 rounded-md py-2.5 sm:py-3 px-4 text-sm sm:text-base md:text-lg mt-1 outline-blue-500"
+                required
               />
             </div>
 
@@ -62,7 +74,10 @@ const Login2 = () => {
                   id="password"
                   name="password"
                   placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full border border-gray-300 rounded-md py-2.5 sm:py-3 px-4 pr-10 text-sm sm:text-base md:text-lg mt-1 outline-blue-500"
+                  required
                 />
                 <button
                   type="button"
@@ -107,9 +122,9 @@ const Login2 = () => {
           {/* Sign up */}
           <div className="text-sm sm:text-base text-center text-blue-500">
             Don’t have an account?{" "}
-            <a href="#" className="hover:underline">
+            <Link to="/signup" className="hover:underline">
               Sign up
-            </a>
+            </Link>
           </div>
         </div>
       </div>
