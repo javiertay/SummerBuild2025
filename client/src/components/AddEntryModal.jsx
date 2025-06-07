@@ -30,7 +30,7 @@ const AddEntryModal = ({ onClose, onSubmit }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-700/50 flex items-center justify-center z-50">
-      <div className="bg-white w-full max-w-xl p-6 rounded-xl shadow-xl">
+      <div className="bg-white w-full max-w-xl max-h-[80vh] overflow-y-auto p-6 rounded-xl shadow-xl">
         <h4 className="text-2xl font-semibold mb-4">Add Internship Entry</h4>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4">
