@@ -1,0 +1,62 @@
+import React from 'react';
+import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom';
+import InputField from '../components/InputField';
+import SignupImage from '../assets/Signup.svg'
+import PasswordField from '../components/PasswordField';
+
+const Signup = () => {
+  return (
+    <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit = {{ opacity: 0, y: -30 }}
+        transition = {{ duration: 0.4 }}
+    >
+        <div className="min-h-screen flex bg-[#f8f4f3] font-sans text-gray-900">
+        {/* Left: Image */}
+        <div className="hidden lg:flex w-1/2 items-center justify-center bg-white p-10">
+            <img
+            src={SignupImage}
+            alt="Signup Illustration"
+            className="w-full h-auto object-contain"
+            />
+        </div>
+
+        {/* Right: Signup Card */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-10">
+            <div className="w-full max-w-md bg-white shadow-md rounded-lg px-6 py-8">
+            <div className="mb-6 text-center">
+                <h2 className="font-bold text-3xl">
+                HUSTLE <span className="bg-blue-600 text-white px-2 rounded-md">HUB</span>
+                </h2>
+            </div>
+
+            <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2>
+
+            <form>
+                <InputField label="Email" type="email" id="email" name="email" placeholder="Email" />
+                <PasswordField label="Password" id="password" name="password" />
+                <PasswordField label="Confirm Password" id="confirmPassword" name="confirmPassword" />
+
+
+                <button
+                type="submit"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-2 rounded-md transition"
+                >
+                Create Account
+                </button>
+            </form>
+
+            <div className="mt-6 text-sm text-center text-blue-500">
+                Already have an account? <Link to="/" className="hover:underline">Log in</Link>
+            </div>
+            </div>
+        </div>
+        </div>
+    </motion.div>
+    
+  );
+};
+
+export default Signup;
