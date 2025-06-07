@@ -20,7 +20,7 @@ const InternshipTable = () => {
   };
 
   const getStatusBadge = (status) => {
-    const baseClasses = "px-3 py-1 rounded-full text-white text-xs font-semibold";
+    const baseClasses = "px-3 py-1 rounded-full text-white text-base font-semibold";
     switch (status.toLowerCase()) {
       case "accepted":
         return <span className={`${baseClasses} bg-green-500`}>Accepted</span>;
@@ -69,27 +69,25 @@ const InternshipTable = () => {
                 <th className="px-4 py-2 min-w-40">CV / Resume</th>
                 <th className="px-4 py-2 min-w-35">Comments</th>
                 <th className="px-4 py-2 min-w-35">Links</th>
-                <th className="px-4 py-2 min-w-30">Actions</th>
+                <th className="px-6 py-2 w-30 ">Actions</th>
               </tr>
             </thead>
             <tbody>
               {applications.length === 0 ? (
-                <tr>
-                  <td colSpan="8" className="text-center text-gray-500 py-6">No applications yet. Click "+ Add Entry" to begin.</td>
-                </tr>
+                <tr></tr>
               ) : (
                 applications.map((app) => (
-                  <tr key={app.id} className="text-sm text-gray-700 border-t">
+                  <tr key={app.id} className="text-base text-gray-700 border-t">
                     <td className="px-4 py-2 min-w-40">{app.company}</td>
                     <td className="px-4 py-2 min-w-40">{app.position}</td>
                     <td className="px-4 py-2 min-w-40">{app.date}</td>
                     <td className="px-4 py-2 min-w-40">{getStatusBadge(app.status)}</td>
-                    <td className="px-4 py-2 min-w-40">{app.resume}</td>
-                    <td className="px-4 py-2 min-w-40">{app.comments}</td>
-                    <td className="px-4 py-2 min-w-40">{app.link}</td>
-                    <td className="px-4 py-2 flex gap-2">
-                      <button className="text-blue-500 hover:underline text-xs">Edit</button>
-                      <button className="text-red-500 hover:underline text-xs">Delete</button>
+                    <td className="px-4 py-2 min-w-35">{app.resume}</td>
+                    <td className="px-4 py-2 min-w-35">{app.comments}</td>
+                    <td className="px-4 py-2 min-w-30">{app.link}</td>
+                    <td className="px-4 py-2 w-30 flex gap-2 justify-center">
+                      <button className="text-blue-500 hover:underline text-base font-semibold">Edit</button>
+                      <button className="text-red-500 hover:underline text-base font-semibold  px-1">Delete</button>
                     </td>
                   </tr>
                 ))
