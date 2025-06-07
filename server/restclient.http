@@ -3,17 +3,17 @@ POST http://localhost:3000/api/users/register
 Content-Type: application/json
 
 {
-  "username": "testuser",
-  "email": "test@example.com",
+  "username": "yooo",
+  "email": "testing@example.com",
   "password": "Password123!"
 }
 
-### Update User
-PATCH http://localhost:3000/api/users/testuser
+### Update Username
+PATCH http://localhost:3000/api/users/Rizze
 Content-Type: application/json
 
 {
-    "username": "Rizze" 
+    "newUsername": "yooo" 
 }
 
 ### Update Email
@@ -29,7 +29,7 @@ PATCH http://localhost:3000/api/users/testuser
 Content-Type: application/json
 
 {
-    "currentPassword": "Password123!",
+    "oldPassword": "Password123!",
     "newPassword": "Newpassword456!"
 }
 
@@ -38,9 +38,9 @@ PATCH http://localhost:3000/api/users/testuser
 Content-Type: application/json
 
 {
-    "username": "brandnewname",
+    "newUsername": "brandnewname",
     "email": "brand@new.email",
-    "currentPassword": "Password123!",
+    "oldPassword": "Password123!",
     "newPassword": "Newpassword456!"
 }
 

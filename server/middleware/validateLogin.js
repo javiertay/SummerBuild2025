@@ -26,7 +26,7 @@ export const loginSchema = Joi.object({
 
 //for updating - all fields optional
 export const updateSchema = Joi.object({
-    username: Joi.string()
+    newUsername: Joi.string()
         .trim()
         .min(3)
         .max(20)
@@ -34,7 +34,7 @@ export const updateSchema = Joi.object({
     email: Joi.string()
         .email()
         .optional(),
-    currentPassword: Joi.string()
+    oldPassword: Joi.string()
         .when('newPassword', {
             is: Joi.exist(),
             then: Joi.required(),
