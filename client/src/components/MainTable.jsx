@@ -8,7 +8,14 @@ const InternshipTable = () => {
 
   const handleAddEntry = () => {
     setShowModal(true);
-  };
+  }; // (for + Add Entry) 
+
+  const handleDeleteEntry = (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this entry?");
+    if (confirmDelete) {
+    setApplications(applications.filter(app => app.id !== id));}
+
+  }; // (for Deleting entries, i felt extra so added prompt)
 
   const handleModalSubmit = (entry) => {
     const newEntry = {
@@ -43,10 +50,10 @@ const InternshipTable = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -30 }}
       transition={{ duration: 0.4 }}
-      className="min-h-screen flex items-center justify-center bg-[#f8f4f3] p-4"
+      className="min-h-screen flex items-center justify-center bg-[#ecdbf3f4] p-4"
     >
-      <div className="w-[80vw] h-[75vh] bg-white rounded-2xl shadow-xl p-6 overflow-hidden flex flex-col">
-        <div className="flex justify-between items-center mb-4">
+      <div className="w-[85vw] h-[75vh] bg-white rounded-2xl shadow-xl p-6 overflow-hidden flex flex-col">
+        <div className="flex justify-between items-ce nter mb-4">
             <h6 className="text-5xl font-bold text-gray-800 py-4">Current Internship Applications</h6></div> 
         <div>
             <p className="text-gray-600 text-2xl text-nowrap">Manage all applications in one place. Input entries, update statuses, and monitor activity.</p>
@@ -61,14 +68,14 @@ const InternshipTable = () => {
         <div className="overflow-auto flex-grow">
           <table className="min-w-full bg-white border border-gray-200 rounded-lg text-nowrap">
             <thead>
-              <tr className="bg-purple-600 text-white text-lg text-left ">
-                <th className="px-4 py-2 min-w-40">Company Name</th>
-                <th className="px-4 py-2 min-w-40">Position</th>
+              <tr className="bg-purple-600 text-white text-base text-center divide-x divide-gray-400">
+                <th className="px-4 py-2 min-w-45 text-left">Company Name</th>
+                <th className="px-4 py-2 min-w-30">Position</th>
                 <th className="px-4 py-2 min-w-40">Application Date</th>
-                <th className="px-4 py-2 min-w-40">Status</th>
-                <th className="px-4 py-2 min-w-40">CV / Resume</th>
-                <th className="px-4 py-2 min-w-35">Comments</th>
-                <th className="px-4 py-2 min-w-35">Links</th>
+                <th className="px-4 py-2 min-w-30 text-center">Status</th>
+                <th className="px-4 py-2 max-w-35">CV / Resume</th>
+                <th className="px-4 py-2 max-w-35">Comments</th>
+                <th className="px-4 py-2 min-w-20">Links</th>
                 <th className="px-6 py-2 w-30 ">Actions</th>
               </tr>
             </thead>
@@ -77,17 +84,41 @@ const InternshipTable = () => {
                 <tr></tr>
               ) : (
                 applications.map((app) => (
-                  <tr key={app.id} className="text-base text-gray-700 border-t">
-                    <td className="px-4 py-2 min-w-40">{app.company}</td>
+                  <tr key={app.id} className="text-base text-gray-800 border-t border-gray-300 even:bg-purple-50 odd:bg-white">
+                    <td className="px-4 py-2 max-w-40 break-words whitespace-normal">{app.company}</td>
                     <td className="px-4 py-2 min-w-40">{app.position}</td>
                     <td className="px-4 py-2 min-w-40">{app.date}</td>
-                    <td className="px-4 py-2 min-w-40">{getStatusBadge(app.status)}</td>
-                    <td className="px-4 py-2 min-w-35">{app.resume}</td>
-                    <td className="px-4 py-2 min-w-35">{app.comments}</td>
-                    <td className="px-4 py-2 min-w-30">{app.link}</td>
+                    <td className="px-4 py-2 min-w-40 text-center">{getStatusBadge(app.status)}</td>
+
+                    {/* to view the resume file in the main table, if no file replace with '-' */}
+                    <td className="px-4 py-2 min-w-35 text-center"> {app.resume ? (
+                         <a
+                          href={URL.createObjectURL(app.resume)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline"
+                        >
+                        Click to View
+                        </a>
+                      ) : ("-")}
+                    </td>
+                    {/* to view the comments file in the main table, if no file replace with '-' */}
+                    <td className="px-4 py-2 min-w-35 text-center">{app.comments ? (
+                        <a
+                          href={URL.createObjectURL(app.comments)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline"
+                        >
+                        Click to View
+                        </a>
+                      ) : ("-")}
+                    </td>
+                    <td className="px-4 py-2 max-w-35 break-words whitespace-normal">{app.link}</td>
                     <td className="px-4 py-2 w-30 flex gap-2 justify-center">
                       <button className="text-blue-500 hover:underline text-base font-semibold">Edit</button>
-                      <button className="text-red-500 hover:underline text-base font-semibold  px-1">Delete</button>
+                      <button className="text-red-500 hover:underline text-base font-semibold  px-1"
+                      onClick={() => handleDeleteEntry(app.id)}> Delete</button>
                     </td>
                   </tr>
                 ))
