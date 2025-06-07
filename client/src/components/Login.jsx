@@ -1,71 +1,107 @@
 import React, { useState } from "react";
 import loginImage from "../assets/loginImage.svg";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
-export default function Login() {
+
+const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 h-screen w-full bg-gray-50">
-      {/* Left Side: Image */}
-      <div className="hidden sm:flex items-center justify-center bg-white">
+    <div className="min-h-screen flex bg-[#f8f4f3] font-sans text-gray-900">
+      {/* Left: Image */}
+      <div className="hidden lg:flex w-1/2 items-center justify-center bg-white p-10">
         <img
-          className="w-4/5 h-auto object-contain"
-          src={loginImage}
+          src={loginImage} // replace with your image path
           alt="Login Illustration"
+          className="w-full h-auto object-contain"
         />
       </div>
 
-      {/* Right Side: Form */}
-      <div className="flex flex-col justify-center px-8">
-        <form className="max-w-[400px] w-full mx-auto bg-white shadow-md rounded-2xl p-8">
-          <h2 className="text-4xl font-extrabold text-center text-indigo-700 mb-6">
-            HUSTLE HUB
-          </h2>
-
-          <div className="flex flex-col mb-4">
-            <label className="mb-1 font-medium">Username</label>
-            <input
-              className="border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              type="text"
-            />
+      {/* Right: Login Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-10">
+        <div className="w-full max-w-md bg-white shadow-md rounded-lg px-6 py-8">
+          {/* Header */}
+          <div className="mb-6 text-center">
+            <h2 className="font-bold text-3xl">
+              HUSTLE <span className="bg-blue-600 text-white px-2 rounded-md">HUB</span>
+            </h2>
           </div>
 
-          <div className="flex flex-col mb-4 relative">
-            <label className="mb-1 font-medium">Password</label>
-            <input
-              className="border p-2 pr-10 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400 w-full"
-              type={showPassword ? "text" : "password"}
-            />
-            <div
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-9 cursor-pointer text-gray-500"
-            >
-              {showPassword ? (
-                <EyeSlashIcon className="h-5 w-5" />
-              ) : (
-                <EyeIcon className="h-5 w-5" />
-              )}
+          <h2 className="text-2xl font-semibold text-center mb-6">Log In</h2>
+
+          <form>
+            {/* Email */}
+            <div className="mb-4">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
+                className="w-full border border-gray-300 rounded-md py-2.5 px-4 text-sm mt-1 outline-blue-500"
+              />
             </div>
-          </div>
 
-          <button className="w-full py-2 my-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-md transition duration-300">
-            Sign In
-          </button>
+            {/* Password */}
+            <div className="mb-4">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  placeholder="Password"
+                  className="w-full border border-gray-300 rounded-md py-2.5 px-4 pr-10 text-sm mt-1 outline-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  <i className={`bx ${showPassword ? 'bx-show' : 'bx-hide'} text-lg`}></i>
+                </button>
+              </div>
+            </div>
 
-          <div className="flex justify-between text-sm text-gray-600">
-            <label className="flex items-center">
-              <input className="mr-2" type="checkbox" />
-              Remember Me
-            </label>
-            <a
-              href="#"
-              className="hover:underline hover:text-indigo-600 transition duration-200"
-            >
-              Create an account
-            </a>
+            {/* Remember Me */}
+            <div className="flex items-center mb-4">
+              <input
+                type="checkbox"
+                id="remember"
+                name="remember"
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <label htmlFor="remember" className="ml-2 text-sm text-gray-600">
+                Remember Me
+              </label>
+            </div>
+
+            {/* Forgot Password & Button */}
+            <div className="flex items-center justify-between mb-6">
+              <a href="#" className="text-sm text-blue-500 hover:underline">
+                Forgot your password?
+              </a>
+              <button
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold uppercase px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Sign In
+              </button>
+            </div>
+          </form>
+
+          {/* Sign up */}
+          <div className="mt-6 text-sm text-center text-blue-500">
+            Don’t have an account? <a href="#" className="hover:underline">Sign up</a>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default Login;
