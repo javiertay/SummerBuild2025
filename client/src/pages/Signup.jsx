@@ -1,11 +1,26 @@
-import React from 'react';
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom';
 import InputField from '../components/InputField';
+import PasswordField from '../components/PasswordField'
 import SignupImage from '../assets/Signup.svg'
-import PasswordField from '../components/PasswordField';
+import React, { useState } from 'react'
+import { toast } from 'react-toastify'; 
 
 const Signup = () => {
+
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (password !== confirmPassword) {
+            toast.error("Passwords do not match!")
+            return
+        }
+        toast.success("Account created successsfully")
+    }
+
   return (
     <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -34,10 +49,10 @@ const Signup = () => {
 
             <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2>
 
-            <form>
-                <InputField label="Email" type="email" id="email" name="email" placeholder="Email" />
-                <PasswordField label="Password" id="password" name="password" />
-                <PasswordField label="Confirm Password" id="confirmPassword" name="confirmPassword" />
+            <form onSubmit={handleSubmit}>
+                <InputField label="Email" type="email" id="email" name="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+                <PasswordField label="Password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+                <PasswordField label="Confirm Password" id="confirmPassword" name="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/>
 
 
                 <button

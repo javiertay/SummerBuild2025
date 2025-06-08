@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const PasswordField = ({ label, id = 'password', name }) => {
+const PasswordField = ({ label, id = 'password', name, value, onChange }) => {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -13,8 +13,11 @@ const PasswordField = ({ label, id = 'password', name }) => {
           type={visible ? 'text' : 'password'}
           id={id}
           name={name}
+          value={value}
+          onChange={onChange}
           placeholder={label}
           className="w-full border border-gray-300 rounded-md py-2.5 px-4 pr-10 text-sm mt-1 outline-blue-500"
+          required
         />
         <button
           type="button"
