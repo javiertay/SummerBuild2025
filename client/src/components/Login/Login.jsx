@@ -7,8 +7,21 @@ const Login = () => {
 
     const handleShowPassword = () => setShowPassword((prevShowPassword) => !prevShowPassword);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        try {
+            const { data } = await login(formData);
+            console.log("Login success:", data);
+    
+            // Store user data in localStorage (optional)
+            localStorage.setItem('profile', JSON.stringify(data));
+
+            
+        } catch (error) {
+            console.error("Login error:", error);
+            document.getElementById('error').textContent = 'Invalid username or password';
+        }
     }
 
     const handleFormChange = (e) => {
