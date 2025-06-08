@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 
 const AddEntryModal = ({ onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -158,8 +159,9 @@ const AddEntryModal = ({ onClose, onSubmit }) => {
             </button>
             <button
               type="submit"
-              className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 whitespace-nowrap"
+              className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 whitespace-nowrap inline-flex items-center gap-1"
             >
+              <PlusIcon className="w-5 h-5 text-white" />
               Add Entry
             </button>
           </div>
