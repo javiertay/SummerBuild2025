@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import AddEntryModal from "../components/AddEntryModal"; // adjust path as needed
+import AddEntryModal from "../components/AddEntryModal"; // adjust path as neededz
+import {
+  MagnifyingGlassIcon,
+} from "@heroicons/react/24/outline";
 
 const InternshipTable = () => {
   const [applications, setApplications] = useState([]);
@@ -73,29 +76,36 @@ const InternshipTable = () => {
       transition={{ duration: 0.4 }}
       className="min-h-screen flex items-center justify-center bg-[#ecdbf3f4] p-4"
     >
-      <div className="w-[85vw] h-[85vh] bg-white rounded-2xl shadow-xl px-5 py-2 overflow-hidden flex flex-col">
-        <div className="flex justify-between items-ce nter mb-2">
-            <h6 className="text-[42px] font-bold text-gray-800 py-2">Current Internship Applications</h6></div> 
+      <div className="w-[85vw] h-[85vh] bg-white rounded-2xl shadow-xl px-5 py-1 overflow-hidden flex flex-col">
+        <div className="flex justify-between items-center mb-1">
+            <h6 className="text-[42px] font-bold text-gray-800 py-1">Current Internship Applications</h6></div> 
         <div>
-            <p className="text-gray-600 text-[20px] text-nowrap">Manage all applications in one place. Input entries, update statuses, and monitor activity.</p>
+            <p className="text-gray-600 text-[20px] mb-4 text-nowrap">Manage all applications in one place. Input entries, update statuses, and monitor activity.</p>
           </div>
 
-          {/*Search, Status filter and Add Entry   */}
+        <div className="flex flex-wrap items-center justify-between gap-4 p-2 bg-white border border-gray-100 rounded-xl shadow-sm mb-4">
 
-          <div className="flex flex-wrap items-center justify-between w-full mt-4 mb-4">
+          {/*Search, Status filter and Add Entry  */}
+
+          <div className="flex flex-wrap items-center justify-between w-full mt-3 mb-3 mx-4">
+
           {/* Left section: Search and Status */}
-          <div className="flex gap-4 flex-wrap">
-            <input
-              type="text"
-              placeholder=" Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="border px-4 py-2 rounded-2xl w-48"
-            />
+
+          <div className="flex gap-4 flex-wrap border-gray-100">
+              <div className="relative">
+                <MagnifyingGlassIcon className="w-5 h-5 text-gray-500 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  placeholder="Company Search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-500 rounded-2xl w-48"
+                />
+              </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="border px-4 py-2 rounded-2xl w-34 text-center"
+              className="border  text-gray-500 border-gray-500 px-4 py-2 rounded-2xl w-34 text-center"
             >
               <option value="">Status</option>
               <option value="Accepted">Accepted</option>
@@ -115,7 +125,8 @@ const InternshipTable = () => {
               + Add Entry
             </button>
           </div>
-        </div>  
+        </div> 
+        </div>
         <div className="overflow-auto flex-grow rounded-2xl">
           <table className="min-w-full bg-white border border-gray-200  text-nowrap">
             <thead>
