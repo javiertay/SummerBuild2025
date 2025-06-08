@@ -4,6 +4,13 @@ import bcrypt from "bcryptjs"
 export const create = async(req, res) => {
     try{
         console.log('Request body:', req.body);
+        
+        // Hash the password before saving
+        if (req.body.password) {
+            const salt = await bcrypt.genSalt(10);
+            req.body.password = await bcrypt.hash(req.body.password, salt);
+        }
+        
         const userData = new User(req.body);
         const savedUser = await userData.save();
         res.status(201).json({

@@ -1,5 +1,4 @@
 import express from "express";
-import User from "../models/user.js";
 import {create, login, update, remove} from "../controllers/userController.js";
 import {registerSchema, loginSchema, updateSchema} from "../middleware/validateLogin.js";
 import {validateRequest} from "../middleware/validateRequest.js";
