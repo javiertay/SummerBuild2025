@@ -3,6 +3,11 @@ import { motion } from "framer-motion";
 import AddEntryModal from "../components/AddEntryModal"; // adjust path as neededz
 import {
   MagnifyingGlassIcon,
+  UserIcon,
+  ClipboardDocumentCheckIcon,
+  CalendarDaysIcon,
+  ArrowDownTrayIcon,
+  PlusIcon,
 } from "@heroicons/react/24/outline";
 
 const InternshipTable = () => {
@@ -102,6 +107,14 @@ const InternshipTable = () => {
                   className="pl-10 pr-4 py-2 border border-gray-500 rounded-2xl w-48"
                 />
               </div>
+              <div className="relative">
+      <ClipboardDocumentCheckIcon className="w-5 h-5 text-gray-500 absolute left-3 top-2.5" />
+      <select className="pl-10 pr-4 py-2 border rounded-full w-36 text-gray-700">
+        <option value="">Status</option>
+        <option value="Accepted">Accepted</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+    </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
