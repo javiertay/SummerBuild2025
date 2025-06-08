@@ -6,14 +6,26 @@ const InternshipTable = () => {
   const [applications, setApplications] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
+// (for search and filter feature)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+
   // (for page settings)
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 10;
-  const totalPages = Math.ceil(applications.length / rowsPerPage);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const filteredApplications = applications.filter(app => {
+  const matchesSearch = app.company.toLowerCase().includes(searchTerm.toLowerCase()) || app.position.toLowerCase().includes(searchTerm.toLowerCase());
+  const matchesStatus = statusFilter ? app.status === statusFilter : true;
+  return matchesSearch && matchesStatus;
+    });
 
-  const paginatedData = applications.slice(
+  const totalPages = Math.ceil(filteredApplications.length / rowsPerPage);
+
+  const paginatedData = filteredApplications.slice(
   (currentPage - 1) * rowsPerPage,
-  currentPage * rowsPerPage);
+  currentPage * rowsPerPage
+  );
+
 
   const handleAddEntry = () => {
     setShowModal(true);
@@ -65,17 +77,47 @@ const InternshipTable = () => {
         <div className="flex justify-between items-ce nter mb-2">
             <h6 className="text-[42px] font-bold text-gray-800 py-2">Current Internship Applications</h6></div> 
         <div>
-            <p className="text-gray-600 text-[24px] text-nowrap">Manage all applications in one place. Input entries, update statuses, and monitor activity.</p>
+            <p className="text-gray-600 text-[20px] text-nowrap">Manage all applications in one place. Input entries, update statuses, and monitor activity.</p>
           </div>
 
-          <div className="mt-5 mb-5 flex justify-end">
-          <button onClick={handleAddEntry} 
-          className="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition">
-            + Add Entry</button>
-            </div>
+          {/*Search, Status filter and Add Entry   */}
 
-        <div className="overflow-auto flex-grow">
-          <table className="min-w-full bg-white border border-gray-200 rounded-lg text-nowrap">
+          <div className="flex flex-wrap items-center justify-between w-full mt-4 mb-4">
+          {/* Left section: Search and Status */}
+          <div className="flex gap-4 flex-wrap">
+            <input
+              type="text"
+              placeholder=" Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="border px-4 py-2 rounded-2xl w-48"
+            />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="border px-4 py-2 rounded-2xl w-34 text-center"
+            >
+              <option value="">Status</option>
+              <option value="Accepted">Accepted</option>
+              <option value="Withdrawn">Withdrawn</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Pending">Pending</option>
+              <option value="Follow Up">Follow Up</option>
+            </select>
+          </div>
+
+          {/* Right section: Button */}
+          <div>
+            <button
+              onClick={handleAddEntry}
+              className="bg-purple-600 text-white px-3 py-2 rounded-lg shadow hover:bg-purple-700 transition"
+            >
+              + Add Entry
+            </button>
+          </div>
+        </div>  
+        <div className="overflow-auto flex-grow rounded-2xl">
+          <table className="min-w-full bg-white border border-gray-200  text-nowrap">
             <thead>
               <tr className="bg-purple-600 text-white text-[16px] text-center divide-x divide-gray-400">
                 <th className="px-4 py-2 min-w-45 text-left">Company Name</th>
@@ -90,10 +132,12 @@ const InternshipTable = () => {
             </thead>
             <tbody>
               {applications.length === 0 ? (
-                <tr></tr>
+                <tr>
+                  <td colSpan="8" className="text-center text-gray-500 py-6">No applications yet. Click "+ Add Entry" to begin.</td>
+                </tr>
               ) : (
-                applications.map((app) => (
-                  <tr key={app.id} className="text-[15px] text-gray-800 border-t border-gray-300 even:bg-purple-50 odd:bg-white">
+                paginatedData.map((app) => (
+                  <tr key={app.id} className="text-[15px] text-gray-800 border-t border-gray-300 even:bg-purple-50 odd:bg-white hover:bg-gray-100 ">
                     <td className="px-4 py-2 max-w-40 break-words whitespace-normal">{app.company}</td>
                     <td className="px-4 py-2 min-w-40">{app.position}</td>
                     <td className="px-4 py-2 min-w-40 text-center">{app.date}</td>
@@ -134,40 +178,69 @@ const InternshipTable = () => {
               )}
             </tbody>
           </table>
-          <div className="flex justify-between items-center mt-4 text-sm text-gray-600">
-  <span>Showing {paginatedData.length} of {applications.length} rows</span>
-  <div className="flex items-center gap-1">
-    <button
-      disabled={currentPage === 1}
-      onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-      className="px-2 py-1 rounded hover:bg-gray-200 disabled:opacity-50"
-    >
-      &laquo;
-    </button>
 
-    {Array.from({ length: totalPages }, (_, i) => (
-      <button
-        key={i + 1}
-        onClick={() => setCurrentPage(i + 1)}
-        className={`px-3 py-1 rounded ${
-          currentPage === i + 1
-            ? "bg-purple-600 text-white  hover:bg-purple-700 transition"
-            : "hover:bg-gray-200"
-        }`}
-      >
-        {i + 1}
-      </button>
-    ))}
 
-    <button
-      disabled={currentPage === totalPages}
-      onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-      className="px-2 py-1 rounded hover:bg-gray-200 disabled:opacity-50"
-    >
-      &raquo;
-    </button>
-  </div>
-</div>
+          {/* table pages feature  */}
+
+          <div className="flex justify-end items-center gap-6 mt-4 text-sm text-gray-600">
+            {/* Rows per page dropdown */}
+            <div className="flex items-center gap-2">
+              <label htmlFor="rowsPerPage" className="font-medium">Rows per page</label>
+              <select
+                id="rowsPerPage"
+                value={rowsPerPage}
+                onChange={(e) => {
+                  setRowsPerPage(Number(e.target.value));
+                  setCurrentPage(1); // reset to page 1 on change
+                }}
+                className="border rounded px-2 py-1 bg-white hover:bg-gray-100"
+              >
+                {[5, 10, 20, 30, 50].map((num) => (
+                  <option key={num} value={num}>
+                    {num}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Page count */}
+            <span className="font-medium">
+              Page {currentPage} of {Math.max(totalPages, 1)}
+            </span>
+
+            {/* Pagination arrows */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="border rounded px-2 py-1 hover:bg-gray-100 disabled:opacity-50"
+              >
+                &laquo;
+              </button>
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                disabled={currentPage === 1}
+                className="border rounded px-2 py-1 hover:bg-gray-100 disabled:opacity-50"
+              >
+                &lsaquo;
+              </button>
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="border rounded px-2 py-1 hover:bg-gray-100 disabled:opacity-50"
+              >
+                &rsaquo;
+              </button>
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                className="border rounded px-2 py-1 hover:bg-gray-100 disabled:opacity-50"
+              >
+                &raquo;
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
       
