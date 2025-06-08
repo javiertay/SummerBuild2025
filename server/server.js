@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import userRoute from './routes/userRoute.js';
+import internshipRoute from './routes/internshipRoute.js';
 
 // Get the directory name from the URL (for ES modules)
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -40,6 +41,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/users', userRoute);
+app.use('/api/internships', internshipRoute);
 
 // Start the server
 app.listen(PORT, () => {

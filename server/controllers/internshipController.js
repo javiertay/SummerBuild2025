@@ -16,7 +16,7 @@ export const create = async (req, res) => {
         console.log('Request body: ',req.body);
         
         const internshipData = new Internship({
-            User: req.user_id,
+            user: userId,
             ...req.body
         });
         const savedInternship = await internshipData.save()
@@ -62,5 +62,29 @@ export const updateStatus = async (req, res) => {
             message: "Failed to update status",
             error: error.message
         });
+    }
+}
+
+export const deleteInternship = async (req, res) => {
+    try {
+        const{username, internshipId} = req.params;
+        const deletedIntern = await Internship.findByIdAndDelete(internshipId);
+
+        if(!deletedIntern){
+            return res.status(404).json({
+                success: false,
+                message: "Internship not found"
+            })
+        }
+        res.status(200).json({
+            success: true,
+            message: "Internship deleted successfully"
+        })
+    } catch (error) {
+        console.error('Error deleting internship: ', error);
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Internal server error"
+        })
     }
 }

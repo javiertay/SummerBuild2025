@@ -3,34 +3,34 @@ POST http://localhost:3000/api/users/register
 Content-Type: application/json
 
 {
-  "username": "yooo",
-  "email": "testing@example.com",
-  "password": "Password123!"
+  "username": "Fatty",
+  "email": "skibidi@example.com",
+  "password": "Pass123!"
 }
 
 ### Update Username
-PATCH http://localhost:3000/api/users/Rizze
+PATCH http://localhost:3000/api/users/Fatty
 Content-Type: application/json
 
 {
-    "newUsername": "yooo" 
+    "newUsername": "Beluga" 
 }
 
 ### Update Email
-PATCH http://localhost:3000/api/users/testuser
+PATCH http://localhost:3000/api/users/Beluga
 Content-Type: application/json
 
 {
-    "email": "newemail@example.com"
+    "email": "belugas@example.com"
 }
 
 ### Update Password
-PATCH http://localhost:3000/api/users/testuser
+PATCH http://localhost:3000/api/users/Beluga
 Content-Type: application/json
 
 {
-    "oldPassword": "Password123!",
-    "newPassword": "Newpassword456!"
+    "oldPassword": "Pass123!",
+    "newPassword": "Newpass456!"
 }
 
 ### Multiple Updates
@@ -46,3 +46,33 @@ Content-Type: application/json
 
 ### Delete user
 DELETE http://localhost:3000/api/users/testuser
+
+
+### Login
+# @name login
+POST http://localhost:3000/api/users/login
+Content-Type: application/json
+
+{
+  "email": "belugas@example.com",
+  "password": "Pass123!"
+}
+
+### Create internship
+POST http://localhost:3000/api/internships
+Content-Type: application/json
+
+{
+  "userId": "6845a53128fda97d26c3dae2",
+  "company": "Microsoft",
+  "position": "Full Stack Developer Intern",
+  "applicationDate": "2025-06-08",
+  "status": "Pending",
+  "comments": "Applied through university career portal. Recruiter said they'll get back within 2 weeks.",
+  "links": [
+    {
+      "label": "Job Posting",
+      "url": "https://careers.microsoft.com/job/12345"
+    }
+  ]
+}
