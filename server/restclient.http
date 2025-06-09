@@ -63,16 +63,28 @@ POST http://localhost:3000/api/internships
 Content-Type: application/json
 
 {
-  "userId": "6845a53128fda97d26c3dae2",
-  "company": "Microsoft",
-  "position": "Full Stack Developer Intern",
-  "applicationDate": "2025-06-08",
-  "status": "Pending",
+  "user": "6845a53128fda97d26c3dae2",
+  "company": "Google",
+  "position": "Back End Developer Intern",
+  "applicationDate": "2025-06-05",
+  "status": "Withdrawn",
   "comments": "Applied through university career portal. Recruiter said they'll get back within 2 weeks.",
   "links": [
     {
       "label": "Job Posting",
-      "url": "https://careers.microsoft.com/job/12345"
+      "url": "https://careers.microsoft.com/job/54321"
     }
   ]
 }
+
+### Update Status
+PATCH http://localhost:3000/api/Beluga/internship/6845ad1524ebeb2a2fb4efc2/status
+Content-Type: application/json
+
+{
+  "status": "Accepted"
+}
+
+### Delete internship
+DELETE http://localhost:3000/api/Beluga/internship/684688887ba51f275a155c8e
+

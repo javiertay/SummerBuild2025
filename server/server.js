@@ -41,7 +41,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/users', userRoute);
-app.use('/api/internships', internshipRoute);
+app.use('/api', internshipRoute);
 
 // Start the server
 app.listen(PORT, () => {

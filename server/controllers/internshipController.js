@@ -15,10 +15,8 @@ export const create = async (req, res) => {
     try {
         console.log('Request body: ',req.body);
         
-        const internshipData = new Internship({
-            user: userId,
-            ...req.body
-        });
+        const internshipData = new Internship(req.body);
+        
         const savedInternship = await internshipData.save()
         res.status(201).json({
             message: "Internship created successfully",
