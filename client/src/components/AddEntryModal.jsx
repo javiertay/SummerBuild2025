@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
+import React, { useState, useEffect } from "react";
+import { PlusIcon } from "@heroicons/react/24/solid";
 
-const AddEntryModal = ({ onClose, onSubmit }) => {
+const AddEntryModal = ({ onClose, onSubmit, initialData }) => {
   const [formData, setFormData] = useState({
     company: "",
     position: "",
@@ -11,6 +11,20 @@ const AddEntryModal = ({ onClose, onSubmit }) => {
     comments: null,
     link: ""
   });
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        company: initialData.company || "",
+        position: initialData.position || "",
+        date: initialData.date || "",
+        status: initialData.status || "",
+        resume: null,
+        comments: null,
+        link: initialData.link || ""
+      });
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -32,7 +46,9 @@ const AddEntryModal = ({ onClose, onSubmit }) => {
   return (
     <div className="fixed inset-0 bg-gray-700/50 flex items-center justify-center z-50">
       <div className="bg-white w-full max-w-xl max-h-[80vh] overflow-y-auto p-6 rounded-xl shadow-xl">
-        <h4 className="text-2xl font-semibold mb-4">Add Internship Entry</h4>
+        <h4 className="text-2xl font-semibold mb-4">
+          {initialData ? "Edit Internship Entry" : "Add Internship Entry"}
+        </h4>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4">
 
@@ -42,6 +58,7 @@ const AddEntryModal = ({ onClose, onSubmit }) => {
               <input
                 id="company"
                 name="company"
+                value={formData.company}
                 placeholder="Company Name"
                 className="border p-2 rounded w-full"
                 onChange={handleChange}
@@ -55,6 +72,7 @@ const AddEntryModal = ({ onClose, onSubmit }) => {
               <input
                 id="position"
                 name="position"
+                value={formData.position}
                 placeholder="Position Applied"
                 className="border p-2 rounded w-full"
                 onChange={handleChange}
@@ -69,6 +87,7 @@ const AddEntryModal = ({ onClose, onSubmit }) => {
                 id="date"
                 name="date"
                 type="date"
+                value={formData.date}
                 className="border p-2 rounded w-full"
                 onChange={handleChange}
                 required
@@ -141,6 +160,7 @@ const AddEntryModal = ({ onClose, onSubmit }) => {
               <input
                 id="link"
                 name="link"
+                value={formData.link}
                 placeholder="https://..."
                 className="border p-2 rounded w-full"
                 onChange={handleChange}
@@ -162,7 +182,7 @@ const AddEntryModal = ({ onClose, onSubmit }) => {
               className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 whitespace-nowrap inline-flex items-center gap-1"
             >
               <PlusIcon className="w-5 h-5 text-white" />
-              Add Entry
+              {initialData ? "Update Entry" : "Add Entry"}
             </button>
           </div>
         </form>
@@ -172,3 +192,4 @@ const AddEntryModal = ({ onClose, onSubmit }) => {
 };
 
 export default AddEntryModal;
+

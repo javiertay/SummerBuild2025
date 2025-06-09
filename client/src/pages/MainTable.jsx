@@ -15,6 +15,9 @@ const InternshipTable = () => {
   const [applications, setApplications] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
+  // (for edit)
+  const [editEntry, setEditEntry] = useState(null);
+
   //(for search and filter feature)
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -63,13 +66,17 @@ const InternshipTable = () => {
   }; 
 
   const handleModalSubmit = (entry) => {
-    const newEntry = {
-      id: Date.now(),
-      ...entry,
-    };
-    setApplications([...applications, newEntry]);
-    setShowModal(false);
-  };
+  if (editEntry) {
+    setApplications(applications.map(app =>
+      app.id === editEntry.id ? { ...app, ...entry, id: editEntry.id } : app
+    ));
+    setEditEntry(null);
+  } else {
+    setApplications([...applications, { id: Date.now(), ...entry }]);
+  }
+  setShowModal(false);
+};
+
 
   const getStatusBadge = (status) => {
     const baseClasses = "px-3 py-1 rounded-full text-white text-[15px] font-semibold";
@@ -231,7 +238,12 @@ const InternshipTable = () => {
                     </td>
                     <td className="px-4 py-2 max-w-35 break-words whitespace-normal">{app.link}</td>
                     <td className="px-4 py-2 w-30 flex gap-2 text-center">
-                      <button className="text-blue-500 hover:underline text-[15px] font-semibold ">Edit</button>
+                      <button 
+                      onClick={() => {
+                        setEditEntry(app);
+                        setShowModal(true);
+                      }}
+                      className="text-blue-500 hover:underline text-[15px] font-semibold ">Edit</button>
                       <button className="text-red-500 hover:underline text-[15px] font-semibold  px-1"
                       onClick={() => handleDeleteEntry(app.id)}> Delete</button>
                     </td>
@@ -287,8 +299,12 @@ const InternshipTable = () => {
 
       {showModal && (
         <AddEntryModal
-          onClose={() => setShowModal(false)}
+          onClose={()=> {
+            setShowModal(false);
+            setEditEntry(null);
+          }}
           onSubmit={handleModalSubmit}
+          initialData={editEntry}
         />
       )}
       
