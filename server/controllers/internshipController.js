@@ -63,6 +63,46 @@ export const updateStatus = async (req, res) => {
     }
 }
 
+export const updateInternship = async (req, res) => {
+    try {
+        const { username, internshipId } = req.params; 
+        const updateData = req.body;
+
+        if (!internshipId) {
+            console.error('[updateInternship] Internship ID is undefined in params.');
+            return res.status(400).json({ success: false, message: "Internship ID is required in URL parameters." });
+        }
+
+        const updatedInternshipDoc = await Internship.findByIdAndUpdate(
+            internshipId,
+            updateData,
+            { new: true, runValidators: true }
+        );
+
+
+        if (!updatedInternshipDoc) {
+            return res.status(404).json({
+                success: false,
+                message: "Internship not found with the provided ID."
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Internship updated successfully",
+            internship: updatedInternshipDoc
+        });
+
+    } catch (error) {
+        console.error("[updateInternship] Error during update: ", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to update internship",
+            error: error.message
+        });
+    }
+}
+
 export const deleteInternship = async (req, res) => {
     try {
         const{username, internshipId} = req.params;

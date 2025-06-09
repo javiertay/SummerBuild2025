@@ -85,6 +85,21 @@ Content-Type: application/json
   "status": "Accepted"
 }
 
+### Update Details
+PATCH http://localhost:3000/api/Beluga/internship/684688817ba51f275a155c88
+Content-Type: application/json
+
+{
+  "position": "Senior Software Engineer Intern",
+  "comments": "Followed up with recruiter, interview scheduled for next week.",
+  "links": [
+    {
+      "label": "Follow-up Email",
+      "url": "https://mail.example.com/sent/12345"
+    }
+  ]
+}
+
 ### Delete internship
 DELETE http://localhost:3000/api/Beluga/internship/684688887ba51f275a155c8e
 
