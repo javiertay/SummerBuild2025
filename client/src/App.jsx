@@ -27,6 +27,7 @@ function App() {
         closeOnClick
         draggable
         pauseOnFocusLoss
+        theme="colored"
         />
      </AnimatePresence>
   );
