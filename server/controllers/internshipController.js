@@ -13,17 +13,54 @@ export const getAll = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        console.log('Request body: ',req.body);
+        console.log('Request body: ', req.body);
+        if (req.file) {
+            console.log('Request file: ', {
+                originalname: req.file.originalname,
+                mimetype: req.file.mimetype,
+                size: req.file.size
+            });
+        }
+
+        const internshipDataPayload = { ...req.body }; // Spread text fields
+
+        if (req.file) {
+            internshipDataPayload.resume = {
+                data: req.file.buffer,
+                contentType: req.file.mimetype,
+                fileName: req.file.originalname
+            };
+        }
         
-        const internshipData = new Internship(req.body);
+        const internshipData = new Internship(internshipDataPayload);
         
-        const savedInternship = await internshipData.save()
+        const savedInternship = await internshipData.save();
+        // Exclude resume data from the response for brevity, or select specific fields
+        const responseInternship = savedInternship.toObject();
+        if (responseInternship.resume) {
+            delete responseInternship.resume.data; // Don't send the large buffer back
+        }
+
         res.status(201).json({
             message: "Internship created successfully",
-            internship: savedInternship
+            internship: responseInternship
         });
     } catch (error) {
-        console.error("Error creating internship");
+        console.error("Error creating internship:", error);
+        if (error.message === 'Only PDF files are allowed!') {
+            return res.status(400).json({
+                message: "Failed to create internship",
+                error: "Only PDF files are allowed for resumes."
+            });
+        }
+        // Handle Mongoose validation errors specifically if needed
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({
+                message: "Failed to create internship due to validation errors",
+                error: error.message,
+                details: error.errors
+            });
+        }
         res.status(500).json({
             message: "Failed to create internship",
             error: error.message

@@ -1,13 +1,29 @@
 import express from "express";
+import multer from 'multer';
 import {getAll, create, updateStatus, updateInternship, deleteInternship} from "../controllers/internshipController.js";
 
 const route = express.Router();
 
+const storage = multer.memoryStorage();
+
+const fileFilter = (req, file, cb) =>{
+    if(file.mimetype === 'application/pdf'){
+        cb(null, true);
+    }else{
+        cb(new Error('Only PDF Files are allowed!'), false)
+    }
+}
+
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: {fileSize: 5*1024*1024}
+})
 //get all internships (home page)
 route.get("/", getAll);
 
 //create new internship
-route.post("/", create);
+route.post("/", upload.single('resume'), create);
 
 //update status only
 route.patch("/:username/internship/:internshipId/status", updateStatus);
