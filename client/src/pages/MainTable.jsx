@@ -12,8 +12,9 @@ import {
   ArrowDownTrayIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-
+import useDarkMode from "../hooks/useDarkMode";
 const InternshipTable = () => {
+  const [isDark, setIsDark] = useDarkMode();
   const [applications, setApplications] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
@@ -121,39 +122,37 @@ const InternshipTable = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -30 }}
       transition={{ duration: 0.4 }}
-      className="min-h-screen flex items-center justify-center bg-[#ecdbf3f4] p-4"
+      className={`relative min-h-screen flex items-center justify-center p-4 transition-colors ${isDark? "bg-[#333333]" : "bg-[rgba(236,219,243,0.4)]"}`}  
     >
-      <div className="w-[85vw] h-[85vh] bg-white rounded-2xl shadow-xl px-5 py-1 overflow-auto flex flex-col">
-        <div className="flex justify-between items-center mb-1">
-            <h6 className="text-[42px] font-bold text-gray-800 py-1">Current Internship Applications</h6></div> 
-        <div>
-            <p className="text-gray-600 text-[20px] mb-4 text-nowrap">Manage all applications in one place. Input entries, update statuses, and monitor activity.</p>
-          </div>
+      {/* button to toggle between dark & light mode */}
+      <div className ="absolute top-4 left-4 z-50">
+        <button onClick={() => setIsDark(!isDark)} className={`p-2 rounded-full shadow transition-colors ${isDark? "bg-gray-700": "bg-gray-200"}`}>
+          {isDark ? "🌙 " : "☀️"}
+        </button>
+      </div>
 
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-200 px-5 py-4 m-5 w-full max-w-[95vw] mx-auto">
+      <div className={`w-[85vw] h-[85vh] rounded-2xl shadow-xl px-5 py-1 overflow-auto flex flex-col transition-colors ${isDark? "bg-[#2b2b2b]" : "bg-[rgba(236,219,243,0.4)]"}`}>
+        <div className="flex justify-between items-center mb-1">
+            <h6 className={`text-[42px] font-bold py-1 transition-colors ${isDark? "text-gray-100" : "text-gray-800"}`}>Current Internship Applications</h6></div> 
+        <div>
+            <p className={`text-[20px] mb-4 text-nowrap transition-colors ${isDark? "text-gray-300": "text-gray-600"  /* original on light */}`}>Manage all applications in one place. Input entries, update statuses, and monitor activity.</p>
+          </div>
+        <div className={`rounded-3xl shadow-sm border px-5 py-4 m-5 w-full max-w-[95vw] mx-auto transition-colors ${isDark? "bg-[#323437] border-gray-700" : "bg-gray-50 border-gray-200"}`}>
 
           {/* Archive Tabs */}
 
           <div className="flex justify-center my-4">
-            <div className="w-[90vw] bg-gray-200 shadow-sm rounded-xl py-1.5 px-2 flex justify-between">
+            <div className={`w-[90vw] shadow-sm rounded-xl py-1.5 px-2 flex justify-between transition-colors ${isDark? "bg-[#2e2e2e]" : "bg-gray-200"}`}>
               <button
                 onClick={() => setActiveTab("current")}
-                className={`w-1/2 py-2 text-base font-semibold flex items-center justify-center gap-2 rounded-xl transition ${
-                  activeTab === "current"
-                    ? "bg-white text-gray-900 shadow"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`w-1/2 py-2 text-base font-semibold flex items-center justify-center gap-2 rounded-xl transition-colors ${activeTab === "current" ? `${isDark ? "bg-gray-700 text-gray-100" : "bg-white text-gray-900"} shadow` : `${isDark ? "text-gray-400 hover:text-gray-200" : "text-gray-500 hover:text-gray-700"}`}`}
               >
                 <ClockIcon className="h-6 w-5" />
                 Current
               </button>
               <button
                 onClick={() => setActiveTab("archived")}
-                className={`w-1/2 py-2 text-base font-semibold flex items-center justify-center gap-2 rounded-xl transition ${
-                  activeTab === "archived"
-                    ? "bg-white text-gray-900 shadow"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`w-1/2 py-2 text-base font-semibold flex items-center justify-center gap-2 rounded-xl transition-colors ${activeTab === "archived" ? `${isDark ? "bg-gray-700 text-gray-100" : "bg-white text-gray-900"} shadow` : `${isDark ? "text-gray-400 hover:text-gray-200" : "text-gray-500 hover:text-gray-700"}`}`}
               >
                 <ArchiveBoxIcon className="h-6 w-5" />
                 Archived
@@ -163,30 +162,30 @@ const InternshipTable = () => {
 
           {/*Search, Status and Date filters and Add Entry  */}
 
-          <div className="flex  flex-wrap justify-between items-center w-full mt-3 mb-3 mx-2 gap-4 pr-4">
+          <div className="flex flex-wrap justify-between items-center w-full mt-3 mb-3 mx-2 gap-4 pr-4">
 
               {/* Search Company */}
 
               <div className="flex flex-wrap gap-4 items-center">
                 <div className="relative ">
-                  <MagnifyingGlassIcon className="w-5 h-5  border-gray-400 absolute left-3 top-2.5" />
+                  <MagnifyingGlassIcon className={`w-5 h-5 absolute left-3 top-2.5 transition-colors ${isDark ? "text-gray-100" : "text-gray-500"}`}/>
                   <input
                     type="text"
                     placeholder="Company Search"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-gray-400  shadow-sm rounded-2xl w-48"
+                    className={`pl-10 pr-4 py-2 shadow-sm rounded-2xl w-48 border transition-colors ${isDark? "bg-[#2e2e2e] border-[#4B5563] text-gray-100 placeholder-gray-400" : "bg-white   border-gray-400 text-gray-700 placeholder-gray-500" }`}
                   />
                 </div>
 
                 {/* Status Filter */}
 
                 <div className="relative w-40">
-                  <ClipboardDocumentCheckIcon className="w-5 h-5 text-gray-500 absolute left-3 top-2.5 pointer-events-none" />
+                  <ClipboardDocumentCheckIcon className={`w-5 h-5 absolute left-3 top-2.5 pointer-events-none transition-colors ${isDark ? "text-gray-100" : "text-gray-500"}`}/>
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="appearance-none shadow-sm  w-full border rounded-2xl border-gray-400 py-2 pl-10 pr-8 text-gray-700 focus:outline-none"
+                    className={`appearance-none shadow-sm w-full rounded-2xl py-2 pl-10 pr-8 focus:outline-none border transition-colors ${isDark? "bg-[#2e2e2e] border-[#4B5563] text-gray-100": "bg-white border-gray-400 text-gray-700"}`}
                   >
                     <option value="">Status</option>
                     <option value="Accepted">Accepted</option>
@@ -195,23 +194,23 @@ const InternshipTable = () => {
                     <option value="Pending">Pending</option>
                     <option value="Follow Up">Follow Up</option>
                   </select>
-                  <ChevronDownIcon className="w-4 h-4 text-gray-500 absolute right-3 top-3.5 pointer-events-none" />
+                  <ChevronDownIcon className={`w-4 h-4 absolute right-3 top-3.5 pointer-events-none transition-colors ${isDark ? "text-gray-100" : "text-gray-500"}`}/>
                 </div>
 
                 {/* Date Filter */}
 
                 <div className="relative w-40">
-                  <CalendarDaysIcon className="w-5 h-5 text-gray-500 absolute left-3 top-2.5 pointer-events-none" />
+                  <CalendarDaysIcon className={`w-5 h-5 absolute left-3 top-2.5 pointer-events-none transition-colors ${isDark ? "text-gray-100" : "text-gray-500"}`}/>
                   <select
                     value={dateFilter}
                     onChange={(e) => setDateFilter(e.target.value)} 
-                    className="appearance-none w-full border rounded-2xl shadow-sm  border-gray-400 py-2 pl-10 pr-8 text-gray-700 focus:outline-none"
+                    className={`appearance-none shadow-sm w-full rounded-2xl py-2 pl-10 pr-8 focus:outline-none border transition-colors ${isDark? "bg-[#2e2e2e] border-[#4B5563] text-gray-100": "bg-white border-gray-400 text-gray-700"}`}
                   >
                     <option value="">Date</option>
                     <option value="newest">Newest First</option>
                     <option value="oldest">Oldest First</option>
                   </select>
-                  <ChevronDownIcon className="w-4 h-4 text-gray-500 absolute right-3 top-3.5 pointer-events-none" />
+                  <ChevronDownIcon className={`w-4 h-4 absolute right-3 top-3.5 pointer-events-none transition-colors ${isDark ? "text-gray-100" : "text-gray-500"}`}/>
                 </div>
               </div>
 
@@ -220,7 +219,7 @@ const InternshipTable = () => {
                 <div>
                   <button
                     onClick={handleAddEntry}
-                    className="bg-purple-600 text-white px-3 py-2 rounded-2xl shadow-sm  hover:bg-purple-700 transition w-32"
+                    className={`px-3 py-2 rounded-2xl shadow-sm transition w-32 ${isDark? "bg-purple-800 hover:bg-purple-900 text-white" : "bg-purple-600 hover:bg-purple-700 text-white" }`}
                   >
                     + Add Entry
                   </button>
@@ -234,9 +233,13 @@ const InternshipTable = () => {
         {/* Table Head */}
 
         <div className="overflow-auto flex-grow">
-          <table className="min-w-full bg-white border border-white text-nowrap">
+          <table className={`min-w-full text-nowrap transition-colors ${isDark? "bg-[#2e2e2e] border-[#4B5563] text-gray-100" : "bg-white border-white text-gray-800"}`}>
             <thead>
-              <tr className="bg-purple-600 text-white text-[16px] text-center divide-x divide-gray-400">
+              {/* change the purple here */}
+              <tr className={`text-[16px] text-center divide-x ${
+    isDark
+      ? "bg-purple-800 text-white divide-gray-400"
+      : "bg-purple-600 text-white divide-gray-400"}`}>
                 <th className="px-4 py-2 min-w-60 text-left rounded-tl-xl">Company Name</th>
                 <th className="px-4 py-2 max-w-60">Position</th>
                 <th className="px-4 py-2 max-w-40">Application Date</th>
@@ -253,12 +256,30 @@ const InternshipTable = () => {
             <tbody>
               {applications.length === 0 ? (
                 <tr>
-                  <td colSpan="8" className="text-center text-gray-500 border py-5 border-gray-300">No applications yet. Click "+ Add Entry" to begin.</td>
+                  <td colSpan="8" className="text-center border py-5 transition-colors" style={{color: isDark ? "#D1D5DB" : "#4B5563", borderColor: isDark ? "#4B5563" : "#D1D5DB",}}>No applications yet. Click "+ Add Entry" to begin.</td>
                 </tr>
               ) : (
                 paginatedData.map((app) => (
                   
-                  <tr key={app.id} className="text-[15px] text-gray-800 border  border-gray-300 even:bg-purple-50 odd:bg-white hover:bg-gray-100 rounded-br ">
+                  <tr key={app.id} className="text-[15px] border rounded-br transition-colors"
+                  style={{
+                    backgroundColor: isDark
+                      ? "#2e2e2e"
+                      : app.id % 2 === 0
+                          ? "rgba(162,155,255,0.4)"
+                          : "#FFFFFF",
+                    color: isDark ? "#F3F4F6" : "#111827",
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.backgroundColor = isDark ? "#444444" : "rgba(162,155,255,0.4)";
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.backgroundColor = isDark
+                      ? "#2e2e2e"
+                      : app.id % 2 === 0
+                          ? "rgba(162,155,255,0.4)"
+                          : "#FFFFFF";
+                  }}>
                     <td className="px-4 py-3 max-w-40 break-words whitespace-normal">{app.company}</td>
                     <td className="px-4 py-2 min-w-40 text-center">{app.position}</td>
                     <td className="px-4 py-2 max-w-40 text-center">{new Date(app.date).toLocaleDateString("en-GB")}</td>
@@ -318,8 +339,8 @@ const InternshipTable = () => {
 
             <tfoot>
               <tr>
-                <td colSpan="8" className="px-4 py-4 text-right border-amber-50 bg-white">
-                  <div className="flex justify-end items-center gap-6 text-sm text-gray-600 rounded ">
+                <td colSpan="8" className={`px-4 py-4 text-right border-amber-50 transition-colors ${isDark ? "bg-[#2e2e2e]" : "bg-white"}`}>
+                  <div className={`flex justify-end items-center gap-6 text-sm rounded transition-colors ${isDark ? "text-white" : "text-gray-600"}`}>
                     <div className="flex items-center gap-2">
                       <label htmlFor="rowsPerPage" className="font-medium">Rows per page</label>
                       <select
@@ -329,7 +350,7 @@ const InternshipTable = () => {
                           setRowsPerPage(Number(e.target.value));
                           setCurrentPage(1);
                         }}
-                        className="border rounded px-2 py-1 bg-white hover:bg-gray-100"
+                        className={`border rounded px-2 py-1 transition-colors ${isDark? "bg-[#2e2e2e] hover:bg-[#444444]" : "bg-white hover:bg-gray-100"}`}
                       >
                         {[5, 10, 20, 30, 50].map((num) => (
                           <option key={num} value={num}>{num}</option>
@@ -343,13 +364,13 @@ const InternshipTable = () => {
 
                     <div className="flex items-center gap-1">
                       <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
-                        className="border rounded px-2 py-1 hover:bg-gray-100 disabled:opacity-70">&laquo;</button>
+                        className={`border rounded px-2 py-1 transition-colors disabled:opacity-70 ${isDark ? "hover:bg-[#444444]" : "hover:bg-gray-100"}`}>&laquo;</button>
                       <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}
-                        className="border rounded px-2 py-1 hover:bg-gray-100 disabled:opacity-70">&lsaquo;</button>
+                        className={`border rounded px-2 py-1 transition-colors disabled:opacity-70 ${isDark ? "hover:bg-[#444444]" : "hover:bg-gray-100"}`}>&lsaquo;</button>
                       <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}
-                        className="border rounded px-2 py-1 hover:bg-gray-100 disabled:opacity-70">&rsaquo;</button>
+                        className={`border rounded px-2 py-1 transition-colors disabled:opacity-70 ${isDark ? "hover:bg-[#444444]" : "hover:bg-gray-100"}`}>&rsaquo;</button>
                       <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}
-                        className="border rounded px-2 py-1 hover:bg-gray-100 disabled:opacity-70">&raquo;</button>
+                        className={`border rounded px-2 py-1 transition-colors disabled:opacity-70 ${isDark ? "hover:bg-[#444444]" : "hover:bg-gray-100"}`}>&raquo;</button>
                     </div>
                   </div>
                 </td>
