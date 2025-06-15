@@ -13,13 +13,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Load environment variables from the parent directory
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
-import userRoute from './routes/users.js';
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// MongoDB connection
-const MONGODB_URI = 'mongodb+srv://perr0003:5UMDFlaf5FkVQwCX@cluster0.0evl96w.mongodb.net/InternshipTracker?retryWrites=true&w=majority&appName=Cluster0';
+// MongoDB connection (need to update this as well)
+const MONGODB_URI = 'mongodb+srv://perr0003:wOBsxyjRqtxu7PyA@cluster0.0evl96w.mongodb.net/InternshipTracker?retryWrites=true&w=majority&appName=Cluster0';
 
 console.log('Connecting to MongoDB...');
 mongoose.connect(MONGODB_URI)
@@ -45,3 +43,6 @@ app.use(express.json());
 app.use('/api/users', userRoute);
 app.use('/api', internshipRoute);
 
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on port ${PORT}`);
+});
