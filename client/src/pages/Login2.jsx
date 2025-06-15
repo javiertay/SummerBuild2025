@@ -3,16 +3,37 @@ import { Link, useNavigate } from "react-router-dom";
 import loginImage from "../assets/loginImage.svg";
 import InputField from "../components/InputField";
 import PasswordField from "../components/PasswordField";
+import { login } from "../api/index.js";
 
 const Login2 = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({ email: '', password: '' });
+
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate("/dashboard");
+    try {
+      const { data } = await login(formData);
+      console.log("Login success:", data);
+
+      // Store user data in localStorage (optional)
+      localStorage.setItem('profile', JSON.stringify(data));
+
+      navigate("/dashboard");
+
+    } catch (error) {
+        console.error("Login error:", error);
+        // document.getElementById('error').textContent = 'Invalid username or password';
+    }
+
+    console.log("Form submitted:", formData);
   };
+
+  const handleFormChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
 
   return (
     <div className="min-h-screen flex bg-[#f8f4f3] font-sans text-gray-900">
@@ -46,8 +67,8 @@ const Login2 = () => {
               type="email"
               name="email"
               placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleFormChange}
               required
             />
 
@@ -55,8 +76,8 @@ const Login2 = () => {
             <PasswordField
               label="Password"
               name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleFormChange}
             />
 
             {/* Remember Me */}
