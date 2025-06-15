@@ -1,35 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route, useLocation } from 'react-router-dom' 
+import Login2 from './pages/Login2';
+import Signup from './pages/Signup';
+import { AnimatePresence } from 'framer-motion';
+import { ToastContainer } from 'react-toastify';
+import ForgotPassword from './pages/ForgetPassword';
+import InternshipTable from './pages/MainTable';
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const location = useLocation();
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+     <AnimatePresence mode="wait">
+       <Routes location ={location} key={location.pathname}>
+         <Route path="/" element={<Login2 />} />
+         <Route path="/login" element={<Login2 />}/>
+         <Route path="/signup" element={<Signup />} />
+         <Route path="/forgot" element={<ForgotPassword />} />
+         <Route path="/dashboard" element={<InternshipTable />} />
+       </Routes>
 
-export default App
+       {/* Global toast notification container */}
+       <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        pauseOnHover
+        closeOnClick
+        draggable
+        pauseOnFocusLoss
+        theme="colored"
+        />
+     </AnimatePresence>
+  );
+}
+export default App;

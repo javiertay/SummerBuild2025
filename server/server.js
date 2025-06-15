@@ -13,6 +13,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Load environment variables from the parent directory
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
+import userRoute from './routes/users.js';
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -43,7 +45,3 @@ app.use(express.json());
 app.use('/api/users', userRoute);
 app.use('/api', internshipRoute);
 
-// Start the server
-app.listen(PORT, () => {
-	console.log(`Server is running on port ${PORT}`);
-});
