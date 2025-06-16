@@ -1,23 +1,42 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import InputField from '../components/InputField'
 import PasswordField from '../components/PasswordField'
 import forgotImage from '../assets/forget.svg'
 import { motion } from 'framer-motion'
 import { toast, ToastContainer } from 'react-toastify'
+import { forgotPassword } from '../api/index.js'
+
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
     const [newPassword, setNewPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
         if (newPassword != confirmPassword) {
             toast.error('Passwords do not match!')
             return;
         }
-        toast.success('Password reset!')
+        try {
+            const { data } = await forgotPassword({
+                username: email, // backend uses 'username', so we send email as username
+                newPassword,
+            });
+            toast.success(data.message || "Password reset!");
+
+            setEmail('')
+            setNewPassword('')
+            setConfirmPassword('')
+        } catch (error) {
+            if (error.response?.status === 404) {
+                toast.error("User not found!");
+            } else {
+                toast.error("Failed to reset password");
+            }
+            console.error("Forgot password error", error)
+        }
     }
    
 

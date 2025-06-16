@@ -9,6 +9,7 @@ import InternshipTable from './pages/MainTable';
 function App() {
   const location = useLocation();
   return (
+    <>
      <AnimatePresence mode="wait">
        <Routes location ={location} key={location.pathname}>
          <Route path="/" element={<Login2 />} />
@@ -17,9 +18,10 @@ function App() {
          <Route path="/forgot" element={<ForgotPassword />} />
          <Route path="/dashboard" element={<InternshipTable />} />
        </Routes>
+      </AnimatePresence>
 
        {/* Global toast notification container */}
-       <ToastContainer
+      <ToastContainer
         position="top-right"
         autoClose={3000}
         hideProgressBar={false}
@@ -28,8 +30,8 @@ function App() {
         draggable
         pauseOnFocusLoss
         theme="colored"
-        />
-     </AnimatePresence>
+      />
+    </>
   );
 }
 export default App;

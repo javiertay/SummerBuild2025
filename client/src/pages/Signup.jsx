@@ -5,6 +5,7 @@ import PasswordField from '../components/PasswordField'
 import SignupImage from '../assets/Signup.svg'
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'; 
+import { register } from '../api/index.js'
 
 const Signup = () => {
 
@@ -12,13 +13,38 @@ const Signup = () => {
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (password !== confirmPassword) {
             toast.error("Passwords do not match!")
             return
         }
-        toast.success("Account created successsfully")
+        try {
+            console.log({
+                username: email,
+                password,
+                fullName: email.split('@')[0],
+                staffRole: 'user'
+            });
+            const username = email.split('@')[0];
+            const { data } = await register({
+                username,
+                email,
+                password
+            });
+            toast.success("Account created successfully")
+            setEmail('');
+            setPassword('')
+            setConfirmPassword('')
+        } catch (error) {
+            const msg = error.response?.data?.message;
+            if (msg === "Username in use by another user") {
+            toast.error("Email already registered");
+            } else {
+            toast.error("Registration failed");
+            }
+            console.error("Registration error:", error);
+        }
     }
 
   return (

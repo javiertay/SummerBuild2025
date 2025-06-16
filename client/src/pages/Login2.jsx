@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { toast } from "react-toastify"
 import { Link, useNavigate } from "react-router-dom";
 import loginImage from "../assets/loginImage.svg";
 import InputField from "../components/InputField";
@@ -6,8 +7,7 @@ import PasswordField from "../components/PasswordField";
 import { login } from "../api/index.js";
 
 const Login2 = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+
   const [formData, setFormData] = useState({ email: '', password: '' });
 
   const navigate = useNavigate();
@@ -17,15 +17,22 @@ const Login2 = () => {
     try {
       const { data } = await login(formData);
       console.log("Login success:", data);
+      toast.success("Login successful")
+      
 
       // Store user data in localStorage (optional)
       localStorage.setItem('profile', JSON.stringify(data));
 
-      navigate("/dashboard");
+      setTimeout(() => navigate("/dashboard"), 1000);
 
     } catch (error) {
         console.error("Login error:", error);
         // document.getElementById('error').textContent = 'Invalid username or password';
+        if (error.response && error.response.status === 401) {
+          toast.error("Incorrect email or password");
+        } else {
+          toast.error("User not found or server error");
+        }
     }
 
     console.log("Form submitted:", formData);
@@ -61,6 +68,7 @@ const Login2 = () => {
           </h2>
 
           <form onSubmit={handleSubmit}>
+
             {/* Email Field */}
             <InputField
               label="Email"
