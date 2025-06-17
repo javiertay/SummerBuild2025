@@ -1,26 +1,32 @@
-import { Routes, Route, useLocation } from 'react-router-dom' 
-import Login2 from './pages/Login2';
-import Signup from './pages/Signup';
-import { AnimatePresence } from 'framer-motion';
-import { ToastContainer } from 'react-toastify';
-import ForgotPassword from './pages/ForgetPassword';
-import InternshipTable from './pages/MainTable';
+import { Routes, Route, useLocation } from "react-router-dom";
+import Login2 from "./pages/Login2";
+import Signup from "./pages/Signup";
+import { AnimatePresence } from "framer-motion";
+import { ToastContainer } from "react-toastify";
+import ForgotPassword from "./pages/ForgetPassword";
+import InternshipTable from "./pages/MainTable";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   const location = useLocation();
   return (
     <>
-     <AnimatePresence mode="wait">
-       <Routes location ={location} key={location.pathname}>
-         <Route path="/" element={<Login2 />} />
-         <Route path="/login" element={<Login2 />}/>
-         <Route path="/signup" element={<Signup />} />
-         <Route path="/forgot" element={<ForgotPassword />} />
-         <Route path="/dashboard" element={<InternshipTable />} />
-       </Routes>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          {/* Public Routes */}
+          <Route path="/" element={<Login2 />} />
+          <Route path="/login" element={<Login2 />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot" element={<ForgotPassword />} />
+
+          {/* Private Routes */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/dashboard" element={<InternshipTable />} />
+          </Route>
+        </Routes>
       </AnimatePresence>
 
-       {/* Global toast notification container */}
+      {/* Global toast notification container */}
       <ToastContainer
         position="top-right"
         autoClose={3000}

@@ -9,6 +9,7 @@ import { login } from "../api/index.js";
 const Login2 = () => {
 
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [rememberMe, setRememberMe] = useState(false);
 
   const navigate = useNavigate();
 
@@ -21,9 +22,11 @@ const Login2 = () => {
       
 
       // Store user data in localStorage (optional)
-      localStorage.setItem('profile', JSON.stringify(data));
+      const storage = rememberMe ? localStorage: sessionStorage;
+      storage.setItem('profile', JSON.stringify(data));
 
-      setTimeout(() => navigate("/dashboard"), 1000);
+      //setTimeout(() => navigate("/dashboard"), 1000);
+      navigate("/dashboard");
 
     } catch (error) {
         console.error("Login error:", error);
@@ -94,6 +97,7 @@ const Login2 = () => {
                 type="checkbox"
                 id="remember"
                 name="remember"
+                onChange={(e) => setRememberMe(e.target.checked)}
                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
               <label
