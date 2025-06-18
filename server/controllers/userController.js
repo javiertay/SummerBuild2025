@@ -202,3 +202,46 @@ export const remove = async(req, res) => {
         });
     }
 }
+
+export const forgetPassword = async (req, res) => {
+    try {
+        const{email} = req.body;
+        if(!email){
+            return res.status(400).json({
+                success: false, 
+                message: "Email is required"
+            });
+        }
+        const user = await User.findOne(email);
+        if(!user){
+            return res.status(404).json({
+                success: false, 
+                message: "Email does not have an account"
+            });
+        }
+
+        const{newPassword} = req.body;
+        if (!newPassword) {
+            return res.status(400).json({
+                success: false, 
+                message: "New password is required"
+            });
+        }
+
+        user.password = newPassword;
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Password reset successfully"
+        });
+
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+        
+    }
+}
