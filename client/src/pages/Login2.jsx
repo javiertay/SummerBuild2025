@@ -17,13 +17,11 @@ const Login2 = () => {
     e.preventDefault();
     try {
       const { data } = await login(formData);
-      console.log("Login success:", data);
-      toast.success("Login successful")
-      
+      toast.success("Login successful")      
 
       // Store user data in localStorage (optional)
       const storage = rememberMe ? localStorage: sessionStorage;
-      storage.setItem('profile', JSON.stringify(data));
+      storage.setItem('profile', JSON.stringify(data?.user));
 
       //setTimeout(() => navigate("/dashboard"), 1000);
       navigate("/dashboard");
@@ -37,8 +35,6 @@ const Login2 = () => {
           toast.error("User not found or server error");
         }
     }
-
-    console.log("Form submitted:", formData);
   };
 
   const handleFormChange = (e) => {

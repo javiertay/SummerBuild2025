@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import AddEntryModal from "../components/AddEntryModal"; // adjust path as neededz
 import {
@@ -13,116 +13,139 @@ import {
   PlusIcon,
 } from "@heroicons/react/24/outline";
 import useDarkMode from "../hooks/useDarkMode";
+import { getInternship } from "../api/index.js";
+
 const InternshipTable = () => {
-  const [isDark, setIsDark] = useDarkMode();
-  const [applications, setApplications] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+    const [isDark, setIsDark] = useDarkMode();
+    const [applications, setApplications] = useState([]);
+    const [showModal, setShowModal] = useState(false);
 
-  // (for archive entry)
-  const [activeTab, setActiveTab] = useState("current");
-  const handleArchiveEntry = (id) => {
-  setApplications(applications.map(app =>
-    app.id === id ? { ...app, archived: !app.archived } : app
-  ));
-  setShowModal(false);
-  setEditEntry(null);
-};
+    // retrieve all internship data
+    useEffect(() => {
+        const fetchInternship = async () => {
+            try {
+                const { data } = await getInternship();
 
-  // (for edit entry)
-  const [editEntry, setEditEntry] = useState(null);
+                const currentUser = JSON.parse(localStorage.getItem("profile")) || JSON.parse(sessionStorage.getItem("profile"));
+                const currentUserID = currentUser?.id;
 
-  // (for search and filter feature)
+                const filteredData = data.filter((intern) => intern.user === currentUserID);
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  
-  // (for page and date settings)
+                console.log(filteredData)
+                setApplications(filteredData)
+            } catch (err) {
+                console.log("No Applications Found")
+            }
+        };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const filteredApplications = applications.filter(app => {
-  const isArchivedMatch = activeTab === "archived" ? app.archived : !app.archived;
-  const matchesSearch =
-    app.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    app.position.toLowerCase().includes(searchTerm.toLowerCase());
-  const matchesStatus = statusFilter ? app.status === statusFilter : true;
-  return isArchivedMatch && matchesSearch && matchesStatus;
-});
+        fetchInternship();
+    }, []);
 
-  // (for date filter feature)
-
-  const [dateFilter, setDateFilter] = useState("");
-  const sortedApplications = [...filteredApplications];
-  if (dateFilter === "newest") {
-    sortedApplications.sort((a, b) => new Date(b.date) - new Date(a.date));
-  } else if (dateFilter === "oldest") {
-    sortedApplications.sort((a, b) => new Date(a.date) - new Date(b.date));
-  }
-
-  // (Paginate the sorted results)
-
-  const paginatedData = sortedApplications.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
-  const totalPages = Math.ceil(sortedApplications.length / rowsPerPage);
-
-  // (for + Add Entry) 
-
-  const handleAddEntry = () => {
-      setEditEntry(null);     // Ensure it's a fresh entry, not editing
-      setShowModal(true);     // Just open the modal
-    };
-
-  // (for Deleting entries, i felt extra so added prompt)
-
-  const handleDeleteEntry = (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this entry?");
-    if (confirmDelete) {
-    setApplications(applications.filter(app => app.id !== id));}
-  }; 
-
-  // (for handling archives button)
-
-  const handleModalSubmit = (entry) => {
-    if (editEntry) {
+    // (for archive entry)
+    const [activeTab, setActiveTab] = useState("current");
+    const handleArchiveEntry = (id) => {
         setApplications(applications.map(app =>
-          app.id === editEntry.id ? { ...app, ...entry, id: editEntry.id } : app
+            app.id === id ? { ...app, archived: !app.archived } : app
         ));
+        setShowModal(false);
         setEditEntry(null);
-      } else {
-        setApplications([...applications, { id: Date.now(), archived: false, ...entry }]);
-      }
-      setShowModal(false);
     };
 
-  // (for status badges)
+    // (for edit entry)
+    const [editEntry, setEditEntry] = useState(null);
 
-  const getStatusBadge = (status) => {
-    const baseClasses = "px-3 py-1 rounded-full text-white text-[15px] font-semibold";
-    switch (status.toLowerCase()) {
-      case "accepted":
-        return <span className={`${baseClasses} bg-green-500`}>Accepted</span>;
-      case "withdrawn":
-        return <span className={`${baseClasses} bg-gray-500`}>Withdrawn</span>;
-      case "rejected":
-        return <span className={`${baseClasses} bg-red-500`}>Rejected</span>;
-      case "pending":
-        return <span className={`${baseClasses} bg-orange-400`}>Pending</span>;
-      case "follow up":
-        return <span className={`${baseClasses} bg-purple-500`}>Follow Up</span>;
-      default:
-        return <span className={`${baseClasses} bg-gray-300`}>{status}</span>;
+    // (for search and filter feature)
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
+    
+    // (for page and date settings)
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const filteredApplications = applications.filter(app => {
+        const isArchivedMatch = activeTab === "archived" ? app.archived : !app.archived;
+        const matchesSearch =
+            app.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            app.position.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = statusFilter ? app.status === statusFilter : true;
+        return isArchivedMatch && matchesSearch && matchesStatus;
+    });
+
+    // (for date filter feature)
+
+    const [dateFilter, setDateFilter] = useState("");
+    const sortedApplications = [...filteredApplications];
+    if (dateFilter === "newest") {
+        sortedApplications.sort((a, b) => new Date(b.date) - new Date(a.date));
+    } else if (dateFilter === "oldest") {
+        sortedApplications.sort((a, b) => new Date(a.date) - new Date(b.date));
     }
-  };
 
-  return (
+    // (Paginate the sorted results)
+
+    const paginatedData = sortedApplications.slice(
+        (currentPage - 1) * rowsPerPage,
+        currentPage * rowsPerPage
+    );
+    const totalPages = Math.ceil(sortedApplications.length / rowsPerPage);
+
+    // (for + Add Entry) 
+
+    const handleAddEntry = () => {
+        setEditEntry(null);     // Ensure it's a fresh entry, not editing
+        setShowModal(true);     // Just open the modal
+        };
+
+    // (for Deleting entries, i felt extra so added prompt)
+
+    const handleDeleteEntry = (id) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this entry?");
+        if (confirmDelete) {
+        setApplications(applications.filter(app => app.id !== id));}
+    }; 
+
+    // (for handling archives button)
+
+    const handleModalSubmit = (entry) => {
+        if (editEntry) {
+            setApplications(applications.map(app =>
+            app.id === editEntry.id ? { ...app, ...entry, id: editEntry.id } : app
+            ));
+            setEditEntry(null);
+        } else {
+            setApplications([...applications, { id: Date.now(), archived: false, ...entry }]);
+        }
+        setShowModal(false);
+        };
+
+    // (for status badges)
+
+    const getStatusBadge = (status) => {
+        const baseClasses = "px-3 py-1 rounded-full text-white text-[15px] font-semibold";
+        switch (status.toLowerCase()) {
+        case "accepted":
+            return <span className={`${baseClasses} bg-green-500`}>Accepted</span>;
+        case "withdrawn":
+            return <span className={`${baseClasses} bg-gray-500`}>Withdrawn</span>;
+        case "rejected":
+            return <span className={`${baseClasses} bg-red-500`}>Rejected</span>;
+        case "pending":
+            return <span className={`${baseClasses} bg-orange-400`}>Pending</span>;
+        case "follow up":
+            return <span className={`${baseClasses} bg-purple-500`}>Follow Up</span>;
+        default:
+            return <span className={`${baseClasses} bg-gray-300`}>{status}</span>;
+        }
+    };
+
+    return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -30 }}
-      transition={{ duration: 0.4 }}
-      className={`relative min-h-screen flex items-center justify-center p-4 transition-colors ${isDark? "bg-[#333333]" : "bg-[rgba(236,219,243,0.4)]"}`}  
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -30 }}
+        transition={{ duration: 0.4 }}
+        className={`relative min-h-screen flex items-center justify-center p-4 transition-colors ${isDark? "bg-[#333333]" : "bg-[rgba(236,219,243,0.4)]"}`}  
     >
       {/* button to toggle between dark & light mode */}
       <div className ="absolute top-4 left-4 z-50">
