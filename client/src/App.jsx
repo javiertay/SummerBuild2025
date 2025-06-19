@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 import ForgotPassword from "./pages/ForgetPassword";
 import InternshipTable from "./pages/MainTable";
 import PrivateRoute from "./components/PrivateRoute";
+import Recommended from "./pages/Recommended";
 
 function App() {
   const location = useLocation();
@@ -22,6 +23,7 @@ function App() {
           {/* Private Routes */}
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard" element={<InternshipTable />} />
+            <Route path="/recommended" element={<Recommended />} />
           </Route>
         </Routes>
       </AnimatePresence>
