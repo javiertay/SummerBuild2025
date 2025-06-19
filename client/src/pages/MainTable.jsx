@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import useDarkMode from "../hooks/useDarkMode";
 import { getInternship } from "../api/index.js";
 import { toast } from "react-toastify"
+import { createInternship } from "../api/index";
 
 const InternshipTable = () => {
     const [isDark, setIsDark] = useDarkMode();
@@ -40,7 +41,7 @@ const InternshipTable = () => {
                 const currentUser = JSON.parse(localStorage.getItem("profile")) || JSON.parse(sessionStorage.getItem("profile"));
                 const currentUserID = currentUser?.id;
 
-                const filteredData = data.filter((intern) => intern.user === currentUserID);
+                const filteredData = data.filter((intern) => String(intern.user) === String(currentUserID));
 
                 console.log(filteredData)
                 setApplications(filteredData)
@@ -116,19 +117,40 @@ const InternshipTable = () => {
         setApplications(applications.filter(app => app.id !== id));}
     }; 
 
-    // (for handling archives button)
+    // (for handling submiting button)
+    // 
+    const handleModalSubmit = async (entry) => {
 
-    const handleModalSubmit = (entry) => {
-        if (editEntry) {
-            setApplications(applications.map(app =>
-            app.id === editEntry.id ? { ...app, ...entry, id: editEntry.id } : app
-            ));
-            setEditEntry(null);
-        } else {
-            setApplications([...applications, { id: Date.now(), archived: false, ...entry }]);
-        }
+      // this gets logged in user
+      const currentUser = JSON.parse(localStorage.getItem("profile")) || JSON.parse(sessionStorage.getItem("profile"));
+      if (!currentUser) {
+      alert("No user found");
+      return;}
+
+      const formData = new FormData();
+      // must include currentUser.id 
+      formData.append("user", currentUser.id); 
+      formData.append("company", entry.company);
+      formData.append("position", entry.position);
+      formData.append("applicationDate", entry.date);
+      formData.append("status", entry.status);
+      if (entry.resume) formData.append("resume", entry.resume);
+      if (entry.comments) formData.append("comments", entry.comments);
+      if (entry.link) {
+        formData.append("links[0][label]", "Job Link");
+        formData.append("links[0][url]", entry.link);
+      }
+
+
+      try {
+        const { data } = await createInternship(formData);
+        setApplications((prev) => [...prev, data]);
         setShowModal(false);
-        };
+      } catch (error) {
+        console.error("Failed to create internship:", error);
+        alert("Something wrong. Please check console.");
+      }
+    };
 
     // (for status badges)
 

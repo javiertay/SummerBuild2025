@@ -41,7 +41,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/users', userRoute);
-app.use('/api', internshipRoute);
+app.use('/api/internships', internshipRoute);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
