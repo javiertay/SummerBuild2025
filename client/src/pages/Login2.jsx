@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify"
 import { Link, useNavigate } from "react-router-dom";
 import loginImage from "../assets/loginImage.svg";
@@ -10,8 +10,19 @@ const Login2 = () => {
 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [rememberMe, setRememberMe] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const rememberedProfile = localStorage.getItem("profile");
+    if (rememberedProfile) {
+      setIsRedirecting(true);
+      setTimeout(()=> {
+        navigate("/dashboard");
+      }, 1000);
+    }
+   }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,16 +30,17 @@ const Login2 = () => {
       const { data } = await login(formData);
       toast.success("Login successful")      
 
-      // Store user data in localStorage (optional)
+      // Store user data in localStorage 
       const storage = rememberMe ? localStorage: sessionStorage;
       storage.setItem('profile', JSON.stringify(data?.user));
 
-      //setTimeout(() => navigate("/dashboard"), 1000);
-      navigate("/dashboard");
+      setIsRedirecting(true);
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
 
     } catch (error) {
         console.error("Login error:", error);
-        // document.getElementById('error').textContent = 'Invalid username or password';
         if (error.response && error.response.status === 401) {
           toast.error("Incorrect email or password");
         } else {
@@ -39,6 +51,15 @@ const Login2 = () => {
 
   const handleFormChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  if (isRedirecting) {
+    return (
+       <div className="min-h-screen bg-[#f8f4f3] font-sans text-gray-900 flex flex-col items-center justify-center space-y-4">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+        <p className="text-lg font-medium">Redirecting to dashboard...</p>
+      </div>
+    )
   }
 
   return (
