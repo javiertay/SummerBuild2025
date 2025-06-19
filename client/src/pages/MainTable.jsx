@@ -17,6 +17,7 @@ import useDarkMode from "../hooks/useDarkMode";
 import { getInternship } from "../api/index.js";
 import { toast } from "react-toastify"
 import { createInternship } from "../api/index";
+import Navbar from "../components/Navbar";
 
 const InternshipTable = () => {
     const [isDark, setIsDark] = useDarkMode();
@@ -183,35 +184,18 @@ const InternshipTable = () => {
   }
 };
     return (
-    <motion.div
+      <>
+      <Navbar isDark={isDark} toggleDarkMode={() => setIsDark(!isDark)} handleLogout={handleLogout} />
+
+      <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -30 }}
         transition={{ duration: 0.4 }}
         className={`relative min-h-screen flex items-center justify-center p-4 transition-colors ${isDark? "bg-[#333333]" : "bg-[rgba(236,219,243,0.4)]"}`}  
     >
-      {/* button to toggle between dark & light mode */}
-      <div className ="absolute top-4 left-4 z-50 flex gap-4">
-        {/* Dark mode toggle */}
-        <button 
-          onClick={() => setIsDark(!isDark)}
-          className={`p-2 rounded-full shadow transition-colors ${isDark ? "bg-gray-700" : "bg-gray-200"}`}
-        >{isDark ? "🌙 " : "☀️"}
-        </button>
-
-        {/* Logout button */}
-        <button 
-          onClick={handleLogout}
-          className={`flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl shadow transition-all duration-200
-            ${isDark
-            ? "bg-red-600 text-white hover:bg-red-700 active:scale-95"
-            : "bg-red-500 text-white hover:bg-red-600 active:scale-95"}
-          `}
-      >
-            <ArrowDownTrayIcon className="w-4 h-4" />
-            Logout
-          </button>
-      </div>
+    
+      
 
       <div className={`w-[85vw] h-[85vh] rounded-2xl shadow-xl px-5 py-1 overflow-auto flex flex-col transition-colors ${isDark? "bg-[#2b2b2b]" : "bg-[rgba(236,219,243,0.4)]"}`}>
         <div className="flex justify-between items-center mb-1">
@@ -478,6 +462,8 @@ const InternshipTable = () => {
 
       </div>
     </motion.div>
+      </>
+    
   );
 };
 
