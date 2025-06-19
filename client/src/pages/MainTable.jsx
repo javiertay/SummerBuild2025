@@ -43,7 +43,7 @@ const InternshipTable = () => {
 
                 const filteredData = data.filter((intern) => String(intern.user) === String(currentUserID));
 
-                console.log(filteredData)
+                console.log("Fetched internships:",filteredData)
                 setApplications(filteredData)
             } catch (err) {
                 console.log("No Applications Found")
@@ -78,8 +78,8 @@ const InternshipTable = () => {
     const filteredApplications = applications.filter(app => {
         const isArchivedMatch = activeTab === "archived" ? app.archived : !app.archived;
         const matchesSearch =
-            app.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            app.position.toLowerCase().includes(searchTerm.toLowerCase());
+            ((app.company ?? "").toLowerCase().includes(searchTerm.toLowerCase())) ||
+            ((app.position ?? "").toLowerCase().includes(searchTerm.toLowerCase()))
         const matchesStatus = statusFilter ? app.status === statusFilter : true;
         return isArchivedMatch && matchesSearch && matchesStatus;
     });
@@ -143,35 +143,45 @@ const InternshipTable = () => {
 
 
       try {
-        const { data } = await createInternship(formData);
-        setApplications((prev) => [...prev, data]);
+        await createInternship(formData);
         setShowModal(false);
+
+        // ✅ Re-fetch full internship list from backend to get clean data
+        const { data } = await getInternship();
+        const currentUser = JSON.parse(localStorage.getItem("profile")) || JSON.parse(sessionStorage.getItem("profile"));
+        const currentUserID = currentUser?.id;
+        const filteredData = data.filter((intern) => String(intern.user) === String(currentUserID));
+        setApplications(filteredData);
       } catch (error) {
         console.error("Failed to create internship:", error);
-        alert("Something wrong. Please check console.");
+        alert("Something went wrong. Please check console.");
       }
     };
 
     // (for status badges)
 
     const getStatusBadge = (status) => {
-        const baseClasses = "px-3 py-1 rounded-full text-white text-[15px] font-semibold";
-        switch (status.toLowerCase()) {
-        case "accepted":
-            return <span className={`${baseClasses} bg-green-500`}>Accepted</span>;
-        case "withdrawn":
-            return <span className={`${baseClasses} bg-gray-500`}>Withdrawn</span>;
-        case "rejected":
-            return <span className={`${baseClasses} bg-red-500`}>Rejected</span>;
-        case "pending":
-            return <span className={`${baseClasses} bg-orange-400`}>Pending</span>;
-        case "follow up":
-            return <span className={`${baseClasses} bg-purple-500`}>Follow Up</span>;
-        default:
-            return <span className={`${baseClasses} bg-gray-300`}>{status}</span>;
-        }
-    };
+  const baseClasses = "px-3 py-1 rounded-full text-white text-[15px] font-semibold";
 
+  if (!status || typeof status !== "string") {
+    return <span className={`${baseClasses} bg-gray-400`}>Unknown</span>;
+  }
+
+  switch (status.toLowerCase()) {
+    case "accepted":
+      return <span className={`${baseClasses} bg-green-500`}>Accepted</span>;
+    case "withdrawn":
+      return <span className={`${baseClasses} bg-gray-500`}>Withdrawn</span>;
+    case "rejected":
+      return <span className={`${baseClasses} bg-red-500`}>Rejected</span>;
+    case "pending":
+      return <span className={`${baseClasses} bg-orange-400`}>Pending</span>;
+    case "follow up":
+      return <span className={`${baseClasses} bg-purple-500`}>Follow Up</span>;
+    default:
+      return <span className={`${baseClasses} bg-gray-300`}>{status}</span>;
+  }
+};
     return (
     <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -333,7 +343,7 @@ const InternshipTable = () => {
               ) : (
                 paginatedData.map((app) => (
                   
-                  <tr key={app.id} className="text-[15px] border rounded-br transition-colors"
+                  <tr key={app._id || app.id} className="text-[15px] border rounded-br transition-colors"
                   style={{
                     backgroundColor: isDark
                       ? "#2e2e2e"
@@ -354,7 +364,7 @@ const InternshipTable = () => {
                   }}>
                     <td className="px-4 py-3 max-w-40 break-words whitespace-normal">{app.company}</td>
                     <td className="px-4 py-2 min-w-40 text-center">{app.position}</td>
-                    <td className="px-4 py-2 max-w-40 text-center">{new Date(app.date).toLocaleDateString("en-GB")}</td>
+                    <td className="px-4 py-2 max-w-40 text-center">{new Date(app.applicationDate).toLocaleDateString("en-GB")}</td>
                     <td className="px-4 py-2 max-w-25 text-center">{getStatusBadge(app.status)}</td>
 
                     {/* to view the resume file in the main table, if no file replace with '-' */}
@@ -382,14 +392,16 @@ const InternshipTable = () => {
                     </td>
 
                     <td className="px-4 py-2 max-w-35 text-center">
-                      {app.link ? (
+                      {Array.isArray(app.links) && app.links.length > 0 && app.links[0].url ? (
                         <a
-                          href={app.link}
+                          href={app.links[0].url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 underline text-[15px]"
                         >
-                          Link</a>) : ("-")}
+                          {app.links[0].label || "Link"}
+                        </a>
+                      ) : ("-")}
                     </td>
 
                     <td className="px-4 py-2 w-30 gap-3 text-center">
