@@ -21,7 +21,7 @@ const ForgotPassword = () => {
         }
         try {
             const { data } = await forgotPassword({
-                username: email, // backend uses 'username', so we send email as username
+                email,
                 newPassword,
             });
             toast.success(data.message || "Password reset!");

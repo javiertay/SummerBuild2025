@@ -212,7 +212,7 @@ export const forgetPassword = async (req, res) => {
                 message: "Email is required"
             });
         }
-        const user = await User.findOne(email);
+        const user = await User.findOne({email});
         if(!user){
             return res.status(404).json({
                 success: false, 
