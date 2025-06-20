@@ -24,7 +24,7 @@ const Navbar = ({ isDark, toggleDarkMode, handleLogout }) => {
             Internship Tracker
           </Link>
           <Link to="/recommended" className={isActive("/recommended")}>
-            Recommended
+            Recommendations
           </Link>
         </div>
       </div>
