@@ -10,3 +10,7 @@ export const register = (formData) => API.post('/users/register', formData);
 // this is for Add Entry
 export const getInternship = () => API.get('/internships');
 export const createInternship = (formData) =>API.post('/internships', formData,);
+
+// for delete entry
+export const deleteInternship = (userId, internshipId) =>
+  API.delete(`/internships/${userId}/internship/${internshipId}`);

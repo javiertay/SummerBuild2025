@@ -15,6 +15,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import useDarkMode from "../hooks/useDarkMode";
 import { getInternship } from "../api/index.js";
+import { deleteInternship } from "../api/index"; // ensure imported
 import { toast } from "react-toastify"
 import { createInternship } from "../api/index";
 import Navbar from "../components/Navbar";
@@ -110,13 +111,21 @@ const InternshipTable = () => {
         setShowModal(true);     // Just open the modal
         };
 
-    // (for Deleting entries, i felt extra so added prompt)
 
-    const handleDeleteEntry = (id) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this entry?");
-        if (confirmDelete) {
-        setApplications(applications.filter(app => app.id !== id));}
-    }; 
+    const handleDeleteEntry = async (id) => {
+      const confirmDelete = window.confirm("Are you sure you want to delete this entry?");
+      if (!confirmDelete) return;
+
+      try {
+        const currentUser = JSON.parse(localStorage.getItem("profile")) || JSON.parse(sessionStorage.getItem("profile"));
+        if (!currentUser) return alert("No user logged in"); 
+        await deleteInternship(currentUser.id, id); // must use currentUser.id
+        setApplications((prev) => prev.filter((app) => app._id !== id));
+      } catch (error) {
+        console.error("Delete failed:", error);
+        alert("Failed to delete entry. Check console.");
+      }
+    };
 
     // (for handling submiting button)
     // 
@@ -396,7 +405,7 @@ const InternshipTable = () => {
                       }}
                       className="text-blue-500 hover:underline text-[15px] font-semibold ">Edit</button>
                       <button className="text-red-500 hover:underline text-[15px] font-semibold  px-2"
-                      onClick={() => handleDeleteEntry(app.id)}> Delete</button>
+                      onClick={() => handleDeleteEntry(app._id)}> Delete</button>
                     </td>
                   </tr>
                 ))
