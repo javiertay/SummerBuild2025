@@ -550,7 +550,7 @@ const InternshipTable = () => {
                         <td className="px-4 py-2 max-w-30 text-center">
                           {app.comments ? (
                             <a
-                              href={URL.createObjectURL(app.comments)}
+                              href={app.comments}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-blue-600 underline text-[15px]"
