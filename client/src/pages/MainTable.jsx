@@ -346,8 +346,10 @@ if (entry._id) {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+
+        exit={{ opacity: 0, y: -30 }}
+        transition={{ duration: 0.15, ease: "easeOut" }}
+
         className="relative min-h-screen flex items-center justify-center p-4 transition-all duration-300"
         style={{ backgroundColor: colors.background }}
       >
@@ -362,7 +364,7 @@ if (entry._id) {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.15, delay: 0.02 }}
             className="flex gap-6 mb-6"
           >
             {/* Left Section - 70% */}
@@ -436,7 +438,7 @@ if (entry._id) {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={{ duration: 0.15, delay: 0.05 }}
               className="flex flex-wrap justify-between items-center mb-6 gap-4"
             >
               <div className="flex flex-wrap gap-4 items-center">
@@ -535,7 +537,7 @@ if (entry._id) {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              transition={{ duration: 0.20, delay: 0.01 }}
               className="flex-1 rounded-2xl border overflow-hidden transition-all duration-300"
               style={{
                 backgroundColor: colors.card,
@@ -594,7 +596,7 @@ if (entry._id) {
                           }}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, delay: index * 0.05 }}
+                          transition={{ duration: 0.2, delay: index * 0.05 }}
                           whileHover={{
                             backgroundColor: colors.accent,
                             scale: 1.01
@@ -703,8 +705,10 @@ if (entry._id) {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                className="flex justify-end items-center mt-6 px-4 gap-10"
+
+                transition={{ duration: 0.2, delay: 0.05 }}
+                className="flex justify-between items-center mt-6 px-4"
+
                 style={{ color: colors.foreground }}
               >
                 <div className="flex items-center gap-3">

@@ -65,7 +65,7 @@ const AddEntryModal = ({ onClose, onSubmit, onArchive, initialData }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.25 }}
+        transition={{ duration: 0.1 }}
       >
         <motion.div 
           className="w-full max-w-xl max-h-[80vh] overflow-y-auto p-6 rounded-xl shadow-xl"
@@ -77,7 +77,7 @@ const AddEntryModal = ({ onClose, onSubmit, onArchive, initialData }) => {
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          transition={{ duration: 0.25 }}
+          transition={{ duration: 0.1 }}
         >
           <h4 
             className="text-2xl font-semibold mb-4"

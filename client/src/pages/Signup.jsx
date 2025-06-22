@@ -69,7 +69,7 @@ const Signup = () => {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -30 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.2 }}
     >
       <div className="min-h-screen flex bg-[#f8f4f3] font-sans text-gray-900">
         {/* Left: Image */}
