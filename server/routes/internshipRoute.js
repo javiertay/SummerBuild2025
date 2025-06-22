@@ -23,20 +23,7 @@ const upload = multer({
 route.get("/", getAll);
 
 //create new internship
-router.post(
-  '/internships',
-  upload.fields([
-    { name: 'resume', maxCount: 1 },
-    { name: 'followUpDate' },
-    { name: 'applicationDate' },
-    { name: 'status' },
-    { name: 'company' },
-    { name: 'position' },
-    { name: 'comments' },
-    { name: 'link' }
-  ]),
-  create
-);
+route.post("/", upload.single('resume'), create);
 
 //update status only
 route.patch("/:username/internship/:internshipId/status", updateStatus);

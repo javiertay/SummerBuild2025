@@ -11,7 +11,7 @@ export const getAll = async (req, res) => {
 }
 
 
-eexport const create = async (req, res) => {
+export const create = async (req, res) => {
   try {
     console.log("Request body:", req.body);
 
