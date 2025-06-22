@@ -1,114 +1,122 @@
-import { useEffect, useState } from "react";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import React from "react";
+import { motion } from "framer-motion";
+import { getThemeColors, getThemeShadows } from "../utils/theme";
 
-const FollowUpNotification = ({ applications, isDark, onMarkDone, onDismiss }) => {
+const FollowUpNotif = ({ applications, isDark, onDismiss, onMarkDone }) => {
+  const colors = getThemeColors(isDark);
+  const shadows = getThemeShadows(isDark);
+
   const today = new Date();
-  const [visible, setVisible] = useState(true);
-
-  const getFollowUpCategory = (app) => {
+  const followUps = applications.filter((app) => {
+    if (app.status?.toLowerCase() !== "follow up") return false;
     const followUpDate = new Date(app.followUpDate || app.applicationDate);
-    const diffDays = Math.floor((followUpDate - today) / (1000 * 60 * 60 * 24));
-    if (diffDays < -7) return null;
-    if (diffDays < 0) return "overdue";
-    if (diffDays === 0) return "today";
-    if (diffDays <= 2) return "upcoming";
-    return null;
-  };
+    return followUpDate >= today || followUpDate < today;
+  });
 
-  const categorizedFollowUps = { overdue: [], today: [], upcoming: [] };
-
-  applications
-    ?.filter((app) => app.status?.toLowerCase() === "follow up")
-    .forEach((app) => {
-      const category = getFollowUpCategory(app);
-      if (category) categorizedFollowUps[category].push(app);
-    });
-
-  useEffect(() => {
-    if (
-      categorizedFollowUps.overdue.length ||
-      categorizedFollowUps.today.length ||
-      categorizedFollowUps.upcoming.length
-    ) {
-      setVisible(true);
-    }
-  }, [applications]);
-
-  if (!visible) return null;
-
-  const renderCard = (app, colorClass, statusText) => (
-    <div
-      key={app._id || app.id}
-      className={`flex justify-between items-center px-4 py-3 rounded-lg shadow-sm border-l-4 ${colorClass} bg-white text-gray-800`}
-    >
-      <div>
-        <p className="font-semibold text-sm">
-          {app.company} — {app.position} (
-          <span className="text-gray-500">
-            {new Date(app.followUpDate || app.applicationDate).toLocaleDateString("en-GB")}
-          </span>
-          )
-        </p>
-        <p className="text-sm text-gray-500">{statusText}</p>
-      </div>
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => onMarkDone(app._id || app.id)}
-          className="p-1 rounded-full hover:bg-green-100 hover:text-green-600 transition"
+  if (followUps.length === 0) {
+    return (
+      <div
+        className="h-full rounded-2xl border p-4 transition-all duration-300"
+        style={{
+          backgroundColor: colors.card,
+          borderColor: colors.border,
+          boxShadow: shadows.sm
+        }}
+      >
+        <h3
+          className="text-lg font-semibold mb-3 transition-colors"
+          style={{ color: colors.foreground }}
         >
-          <CheckIcon className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => onDismiss(app._id || app.id)}
-          className="p-1 rounded-full hover:bg-red-100 hover:text-red-600 transition"
+          Follow-ups to Track
+        </h3>
+        <div
+          className="text-center py-8 transition-colors"
+          style={{ color: colors.mutedForeground }}
         >
-          <XMarkIcon className="w-5 h-5" />
-        </button>
+          <div className="text-4xl mb-2">✅</div>
+          <p className="text-sm">No follow-ups needed</p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   return (
     <div
-      className={`w-full py-4 flex justify-center transition-colors ${
-        isDark ? "bg-[#333333]" : "bg-[rgba(236,219,243,0.4)]"
-      }`}
+      className="h-full rounded-2xl border p-4 transition-all duration-300 overflow-auto"
+      style={{
+        backgroundColor: colors.card,
+        borderColor: colors.border,
+        boxShadow: shadows.sm
+      }}
     >
-      <div
-        className={`w-[90%] max-w-5xl p-6 rounded-xl shadow-md transition-colors ${
-          isDark ? "bg-[#2b2b2b] text-white" : "bg-[rgba(236,219,243,0.4)] text-gray-800"
-        }`}
+      <h3
+        className="text-lg font-semibold mb-3 transition-colors"
+        style={{ color: colors.foreground }}
       >
-        <h3 className="text-xl font-bold flex items-center gap-2 mb-4">
-          <span>🔔</span> Follow-Ups to Track
-        </h3>
-
-        {categorizedFollowUps.overdue.length > 0 && (
-          <div className="space-y-3 mb-4">
-            {categorizedFollowUps.overdue.map((app) =>
-              renderCard(app, "border-red-500", "Follow-up overdue")
-            )}
-          </div>
-        )}
-
-        {categorizedFollowUps.today.length > 0 && (
-          <div className="space-y-3 mb-4">
-            {categorizedFollowUps.today.map((app) =>
-              renderCard(app, "border-yellow-400", "Follow-up today")
-            )}
-          </div>
-        )}
-
-        {categorizedFollowUps.upcoming.length > 0 && (
-          <div className="space-y-3">
-            {categorizedFollowUps.upcoming.map((app) =>
-              renderCard(app, "border-green-500", "Upcoming interview")
-            )}
-          </div>
-        )}
+        Follow-ups to Track ({followUps.length})
+      </h3>
+      <div className="space-y-3">
+        {followUps.map((app, index) => (
+          <motion.div
+            key={app._id}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
+            className="p-3 rounded-lg border transition-all duration-200 hover:scale-[1.02]"
+            style={{
+              backgroundColor: colors.accent,
+              borderColor: colors.border
+            }}
+          >
+            <div className="flex justify-between items-start mb-2">
+              <div className="flex-1">
+                <h4
+                  className="font-semibold text-sm transition-colors"
+                  style={{ color: colors.foreground }}
+                >
+                  {app.company}
+                </h4>
+                <p
+                  className="text-xs transition-colors"
+                  style={{ color: colors.mutedForeground }}
+                >
+                  {app.position}
+                </p>
+              </div>
+              <div className="flex gap-1 ml-2">
+                <button
+                  onClick={() => onDismiss(app._id)}
+                  className="px-2 py-1 text-xs rounded transition-all duration-200 hover:scale-105 active:scale-95"
+                  style={{
+                    backgroundColor: colors.muted,
+                    color: colors.mutedForeground
+                  }}
+                >
+                  Dismiss
+                </button>
+                <button
+                  onClick={() => onMarkDone(app._id)}
+                  className="px-2 py-1 text-xs rounded transition-all duration-200 hover:scale-105 active:scale-95 font-semibold"
+                  style={{
+                    backgroundColor: colors.primary,
+                    color: colors.primaryForeground
+                  }}
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+            <div
+              className="text-xs transition-colors"
+              style={{ color: colors.mutedForeground }}
+            >
+              Applied: {new Date(app.applicationDate).toLocaleDateString("en-GB")}
+            </div>
+          </motion.div>
+        ))}
       </div>
     </div>
   );
 };
 
-export default FollowUpNotification;
+export default FollowUpNotif;

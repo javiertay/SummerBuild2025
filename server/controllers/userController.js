@@ -203,9 +203,45 @@ export const remove = async(req, res) => {
     }
 }
 
+export const getUserById = async(req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!id) {
+            return res.status(400).json({
+                success: false, 
+                message: "User ID is required"
+            });
+        }
+
+        const user = await User.findById(id).select('-password');
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+        
+        return res.status(200).json({
+            success: true,
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        console.error('Error getting user:', error);
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Internal server error"
+        });
+    }
+}
+
 export const forgetPassword = async (req, res) => {
     try {
-        const{email} = req.body;
+        const { email } = req.body;
         if(!email){
             return res.status(400).json({
                 success: false, 
