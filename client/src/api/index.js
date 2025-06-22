@@ -37,6 +37,7 @@ export const updateInternshipStatus = (userId, internshipId, status) =>
 export const updateInternship = (userId, internshipId, formData) =>
   API.patch(`/internships/${userId}/internship/${internshipId}`, formData);
 
+
 // External API functions
 export const getExternalInternships = async () => {
   try {
@@ -108,3 +109,4 @@ export const getRecommendedInternships = async (skills = [], location = '') => {
     throw error;
   }
 };
+

@@ -14,9 +14,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import useDarkMode from "../hooks/useDarkMode";
 import { getInternship } from "../api/index.js";
-import { deleteInternship } from "../api/index"; // ensure imported
+import { deleteInternship } from "../api/index";
 import { toast } from "react-toastify";
 import { createInternship } from "../api/index";
+import { updateInternship } from "../api/index"; 
 import Navbar from "../components/Navbar";
 import FollowUpNotif from "../components/FollowUpNotif.jsx";
 import { getThemeColors, getThemeShadows } from "../utils/theme";
@@ -205,14 +206,34 @@ const InternshipTable = () => {
       alert("No user found");
       return;
     }
-
+if (entry._id) {
+    const payload = {
+      user: currentUser.id,
+      company: entry.company,
+      position: entry.position,
+      applicationDate: entry.applicationDate,
+      status: entry.status,
+      followUpDate: entry.followUpDate,
+      comments: entry.comments,
+      links: entry.link
+        ? [{ label: "Job Link", url: entry.link }]
+        : [],
+    };
+    try {
+      await updateInternship(currentUser.id, entry._id, payload);
+    } catch (error) {
+      console.error("Update failed:", error);
+      alert("Failed to update entry");
+    }
+  } else {
     const formData = new FormData();
-    // must include currentUser.id
     formData.append("user", currentUser.id);
     formData.append("company", entry.company);
     formData.append("position", entry.position);
-    formData.append("applicationDate", entry.date);
+    formData.append("applicationDate", entry.applicationDate || entry.date); 
     formData.append("status", entry.status);
+    if (entry.followUpDate)
+      formData.append("followUpDate", entry.followUpDate);
     if (entry.resume) formData.append("resume", entry.resume);
     if (entry.comments) formData.append("comments", entry.comments);
     if (entry.link) {
@@ -222,23 +243,24 @@ const InternshipTable = () => {
 
     try {
       await createInternship(formData);
-      setShowModal(false);
-
-      // ✅ Re-fetch full internship list from backend to get clean data
-      const { data } = await getInternship();
-      const currentUser =
-        JSON.parse(localStorage.getItem("profile")) ||
-        JSON.parse(sessionStorage.getItem("profile"));
-      const currentUserID = currentUser?.id;
-      const filteredData = data.filter(
-        (intern) => String(intern.user) === String(currentUserID)
-      );
-      setApplications(filteredData);
     } catch (error) {
-      console.error("Failed to create internship:", error);
-      alert("Something went wrong. Please check console.");
+      console.error("Create failed:", error);
+      alert("Failed to create entry");
     }
-  };
+  }
+
+  setShowModal(false);
+  setEditEntry(null);
+
+  // Refresh applications
+  const { data } = await getInternship();
+  const currentUserID = currentUser?.id;
+  const filteredData = data.filter(
+    (intern) => String(intern.user) === String(currentUserID)
+  );
+  setApplications(filteredData);
+};
+
 
   // (for status badges)
 
@@ -324,13 +346,15 @@ const InternshipTable = () => {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
+
         exit={{ opacity: 0, y: -30 }}
         transition={{ duration: 0.15, ease: "easeOut" }}
+
         className="relative min-h-screen flex items-center justify-center p-4 transition-all duration-300"
         style={{ backgroundColor: colors.background }}
       >
         <div
-          className="w-[95vw] h-[92vh] rounded-3xl shadow-xl px-6 py-4 overflow-auto flex flex-col transition-all duration-300"
+          className="w-[85vw] h-[85vh] rounded-3xl shadow-xl px-6 py-3 overflow-auto flex flex-col transition-all duration-300"
           style={{ 
             backgroundColor: colors.card,
             boxShadow: shadows.lg
@@ -535,6 +559,7 @@ const InternshipTable = () => {
                       <th className="px-6 py-4 font-semibold">Position</th>
                       <th className="px-6 py-4 font-semibold">Date Applied</th>
                       <th className="px-6 py-4 font-semibold">Status</th>
+                      <th className="px-4 py-2 font-semibold">Follow-Up Date</th>
                       <th className="px-6 py-4 font-semibold">Resume</th>
                       <th className="px-6 py-4 font-semibold">Comments</th>
                       <th className="px-6 py-4 font-semibold">Link</th>
@@ -590,6 +615,10 @@ const InternshipTable = () => {
                             {getStatusBadge(app.status)}
                           </td>
                           <td className="px-6 py-4 text-center">
+                            {app.followUpDate
+                              ? new Date(app.followUpDate).toLocaleDateString("en-GB"): "-"}
+                          </td>
+                          <td className="px-6 py-4 text-center">
                             {app.resume ? (
                               <a
                                 href={URL.createObjectURL(app.resume)}
@@ -638,16 +667,24 @@ const InternshipTable = () => {
                             <div className="flex items-center justify-center gap-3">
                               <button
                                 onClick={() => {
-                                  setEditEntry(app);
-                                  setShowModal(true);
-                                }}
-                                className="text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
+                                setEditEntry({
+                                    ...app,
+                                applicationDate: app.applicationDate
+                                  ? new Date(app.applicationDate).toISOString()
+                                  : "",
+                                ...(app.followUpDate && {
+                                  followUpDate: new Date(app.followUpDate).toISOString(),
+                                }),
+                              });
+                                setShowModal(true);
+                              }}
+                                className="text-md font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
                                 style={{ color: colors.primary }}
                               >
                                 Edit
                               </button>
                               <button
-                                className="text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
+                                className="text-md font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
                                 style={{ color: colors.destructive }}
                                 onClick={() => handleDeleteEntry(app._id)}
                               >
@@ -668,11 +705,13 @@ const InternshipTable = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
+
                 transition={{ duration: 0.2, delay: 0.05 }}
                 className="flex justify-between items-center mt-6 px-4"
+
                 style={{ color: colors.foreground }}
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <label htmlFor="rowsPerPage" className="font-medium text-sm">
                     Rows per page:
                   </label>
@@ -683,7 +722,7 @@ const InternshipTable = () => {
                       setRowsPerPage(Number(e.target.value));
                       setCurrentPage(1);
                     }}
-                    className="border rounded-lg px-3 py-1 text-sm transition-all duration-200 focus:ring-2 focus:ring-primary focus:outline-none"
+                    className="border rounded-lg px-4 py-1 text-sm transition-all duration-200 focus:ring-2 focus:ring-primary focus:outline-none"
                     style={{
                       backgroundColor: colors.input,
                       borderColor: colors.border,
@@ -698,7 +737,7 @@ const InternshipTable = () => {
                   </select>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <span className="font-medium text-sm">
                     Page {currentPage} of {Math.max(totalPages, 1)}
                   </span>

@@ -26,6 +26,12 @@ const internshipSchema = new Schema({
         default: 'Pending',
         required: true
     },
+
+    followUpDate: {
+    type: Date,
+    required: false,
+    },
+    
     resume:{
         data: Buffer,
         contentType: String,
