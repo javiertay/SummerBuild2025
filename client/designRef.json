@@ -1,0 +1,119 @@
+{
+    "theme": {
+      "light": {
+        "colors": {
+          "background": "#f5f5ff",
+          "foreground": "#2a2a4a",
+          "card": "#ffffff",
+          "cardForeground": "#2a2a4a",
+          "popover": "#ffffff",
+          "popoverForeground": "#2a2a4a",
+          "primary": "#6e56cf",
+          "primaryForeground": "#ffffff",
+          "secondary": "#e4dfff",
+          "secondaryForeground": "#4a4080",
+          "muted": "#f0f0fa",
+          "mutedForeground": "#6c6c8a",
+          "accent": "#d8e6ff",
+          "accentForeground": "#2a2a4a",
+          "destructive": "#ff5470",
+          "destructiveForeground": "#ffffff",
+          "border": "#e0e0f0",
+          "input": "#e0e0f0",
+          "ring": "#6e56cf",
+          "chart": {
+            "1": "#6e56cf",
+            "2": "#9e8cfc",
+            "3": "#5d5fef",
+            "4": "#7c75fa",
+            "5": "#4740b3"
+          },
+          "sidebar": "#f0f0fa",
+          "sidebarForeground": "#2a2a4a",
+          "sidebarPrimary": "#6e56cf",
+          "sidebarPrimaryForeground": "#ffffff",
+          "sidebarAccent": "#d8e6ff",
+          "sidebarAccentForeground": "#2a2a4a",
+          "sidebarBorder": "#e0e0f0",
+          "sidebarRing": "#6e56cf"
+        },
+        "fonts": {
+          "sans": "Inter, sans-serif",
+          "serif": "Georgia, serif",
+          "mono": "JetBrains Mono, monospace"
+        },
+        "radius": "0.5rem",
+        "shadows": {
+          "2xs": "0px 4px 10px 0px hsl(240 30% 25% / 0.06)",
+          "xs": "0px 4px 10px 0px hsl(240 30% 25% / 0.06)",
+          "sm": "0px 4px 10px 0px hsl(240 30% 25% / 0.12), 0px 1px 2px -1px hsl(240 30% 25% / 0.12)",
+          "default": "0px 4px 10px 0px hsl(240 30% 25% / 0.12), 0px 1px 2px -1px hsl(240 30% 25% / 0.12)",
+          "md": "0px 4px 10px 0px hsl(240 30% 25% / 0.12), 0px 2px 4px -1px hsl(240 30% 25% / 0.12)",
+          "lg": "0px 4px 10px 0px hsl(240 30% 25% / 0.12), 0px 4px 6px -1px hsl(240 30% 25% / 0.12)",
+          "xl": "0px 4px 10px 0px hsl(240 30% 25% / 0.12), 0px 8px 10px -1px hsl(240 30% 25% / 0.12)",
+          "2xl": "0px 4px 10px 0px hsl(240 30% 25% / 0.30)"
+        }
+      },
+      "dark": {
+        "colors": {
+          "background": "#0f0f1a",
+          "foreground": "#e2e2f5",
+          "card": "#1a1a2e",
+          "cardForeground": "#e2e2f5",
+          "popover": "#1a1a2e",
+          "popoverForeground": "#e2e2f5",
+          "primary": "#a48fff",
+          "primaryForeground": "#0f0f1a",
+          "secondary": "#2d2b55",
+          "secondaryForeground": "#c4c2ff",
+          "muted": "#222244",
+          "mutedForeground": "#a0a0c0",
+          "accent": "#303060",
+          "accentForeground": "#e2e2f5",
+          "destructive": "#ff5470",
+          "destructiveForeground": "#ffffff",
+          "border": "#303052",
+          "input": "#303052",
+          "ring": "#a48fff",
+          "chart": {
+            "1": "#a48fff",
+            "2": "#7986cb",
+            "3": "#64b5f6",
+            "4": "#4db6ac",
+            "5": "#ff79c6"
+          },
+          "sidebar": "#1a1a2e",
+          "sidebarForeground": "#e2e2f5",
+          "sidebarPrimary": "#a48fff",
+          "sidebarPrimaryForeground": "#0f0f1a",
+          "sidebarAccent": "#303060",
+          "sidebarAccentForeground": "#e2e2f5",
+          "sidebarBorder": "#303052",
+          "sidebarRing": "#a48fff"
+        },
+        "fonts": {
+          "sans": "Inter, sans-serif",
+          "serif": "Georgia, serif",
+          "mono": "JetBrains Mono, monospace"
+        },
+        "radius": "0.5rem",
+        "shadows": {
+          "2xs": "0px 4px 10px 0px hsl(240 30% 25% / 0.06)",
+          "xs": "0px 4px 10px 0px hsl(240 30% 25% / 0.06)",
+          "sm": "0px 4px 10px 0px hsl(240 30% 25% / 0.12), 0px 1px 2px -1px hsl(240 30% 25% / 0.12)",
+          "default": "0px 4px 10px 0px hsl(240 30% 25% / 0.12), 0px 1px 2px -1px hsl(240 30% 25% / 0.12)",
+          "md": "0px 4px 10px 0px hsl(240 30% 25% / 0.12), 0px 2px 4px -1px hsl(240 30% 25% / 0.12)",
+          "lg": "0px 4px 10px 0px hsl(240 30% 25% / 0.12), 0px 4px 6px -1px hsl(240 30% 25% / 0.12)",
+          "xl": "0px 4px 10px 0px hsl(240 30% 25% / 0.12), 0px 8px 10px -1px hsl(240 30% 25% / 0.12)",
+          "2xl": "0px 4px 10px 0px hsl(240 30% 25% / 0.30)"
+        }
+      },
+      "derived": {
+        "radiusSm": "calc(0.5rem - 4px)",
+        "radiusMd": "calc(0.5rem - 2px)",
+        "radiusLg": "0.5rem",
+        "radiusXl": "calc(0.5rem + 4px)"
+      }
+    }
+  }
+  

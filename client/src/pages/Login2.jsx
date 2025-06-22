@@ -1,18 +1,66 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify"
 import { Link, useNavigate } from "react-router-dom";
 import loginImage from "../assets/loginImage.svg";
 import InputField from "../components/InputField";
 import PasswordField from "../components/PasswordField";
+import { login } from "../api/index.js";
 
 const Login2 = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [rememberMe, setRememberMe] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const rememberedProfile = localStorage.getItem("profile");
+    if (rememberedProfile) {
+      setIsRedirecting(true);
+      setTimeout(()=> {
+        navigate("/dashboard");
+      }, 1000);
+    }
+   }, [navigate]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate("/dashboard");
+    try {
+      const { data } = await login(formData);
+      toast.success("Login successful")      
+
+      // Store user data in localStorage 
+      const storage = rememberMe ? localStorage: sessionStorage;
+      storage.setItem('profile', JSON.stringify(data?.user));
+
+      setIsRedirecting(true);
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+
+    } catch (error) {
+        console.error("Login error:", error);
+        if (error.response && error.response.status === 401) {
+          toast.error("Incorrect email or password");
+        } else {
+          toast.error("User not found or server error");
+        }
+    }
   };
+
+  const handleFormChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  if (isRedirecting) {
+    return (
+       <div className="min-h-screen bg-[#f8f4f3] font-sans text-gray-900 flex flex-col items-center justify-center space-y-4">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+        <p className="text-lg font-medium">Redirecting to dashboard...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen flex bg-[#f8f4f3] font-sans text-gray-900">
@@ -40,14 +88,15 @@ const Login2 = () => {
           </h2>
 
           <form onSubmit={handleSubmit}>
+
             {/* Email Field */}
             <InputField
               label="Email"
               type="email"
               name="email"
               placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleFormChange}
               required
             />
 
@@ -55,8 +104,8 @@ const Login2 = () => {
             <PasswordField
               label="Password"
               name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleFormChange}
             />
 
             {/* Remember Me */}
@@ -65,6 +114,7 @@ const Login2 = () => {
                 type="checkbox"
                 id="remember"
                 name="remember"
+                onChange={(e) => setRememberMe(e.target.checked)}
                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
               <label

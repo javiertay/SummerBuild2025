@@ -202,3 +202,82 @@ export const remove = async(req, res) => {
         });
     }
 }
+
+export const getUserById = async(req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!id) {
+            return res.status(400).json({
+                success: false, 
+                message: "User ID is required"
+            });
+        }
+
+        const user = await User.findById(id).select('-password');
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+        
+        return res.status(200).json({
+            success: true,
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        console.error('Error getting user:', error);
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Internal server error"
+        });
+    }
+}
+
+export const forgetPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if(!email){
+            return res.status(400).json({
+                success: false, 
+                message: "Email is required"
+            });
+        }
+        const user = await User.findOne({email});
+        if(!user){
+            return res.status(404).json({
+                success: false, 
+                message: "Email does not have an account"
+            });
+        }
+
+        const{newPassword} = req.body;
+        if (!newPassword) {
+            return res.status(400).json({
+                success: false, 
+                message: "New password is required"
+            });
+        }
+
+        user.password = newPassword;
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Password reset successfully"
+        });
+
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+        
+    }
+}

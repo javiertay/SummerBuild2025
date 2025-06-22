@@ -22,7 +22,7 @@ export const create = async (req, res) => {
             });
         }
 
-        const internshipDataPayload = { ...req.body }; // Spread text fields
+        const internshipDataPayload = { ...req.body };
 
         if (req.file) {
             internshipDataPayload.resume = {
@@ -32,13 +32,18 @@ export const create = async (req, res) => {
             };
         }
         
+        // Handle incoming link and structure it for the schema
+        if (internshipDataPayload.link) {
+            internshipDataPayload.links = [{ label: 'Job Link', url: internshipDataPayload.link }];
+            delete internshipDataPayload.link; // Clean up the flat field
+        }
+
         const internshipData = new Internship(internshipDataPayload);
         
         const savedInternship = await internshipData.save();
-        // Exclude resume data from the response for brevity, or select specific fields
         const responseInternship = savedInternship.toObject();
         if (responseInternship.resume) {
-            delete responseInternship.resume.data; // Don't send the large buffer back
+            delete responseInternship.resume.data;
         }
 
         res.status(201).json({
