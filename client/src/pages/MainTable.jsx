@@ -324,13 +324,13 @@ const InternshipTable = () => {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -30 }}
+        exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="relative min-h-screen flex items-center justify-center p-4 transition-all duration-300"
         style={{ backgroundColor: colors.background }}
       >
         <div
-          className="w-[95vw] h-[92vh] rounded-3xl shadow-xl px-6 py-4 overflow-auto flex flex-col transition-all duration-300"
+          className="w-[85vw] h-[85vh] rounded-3xl shadow-xl px-6 py-3 overflow-auto flex flex-col transition-all duration-300"
           style={{ 
             backgroundColor: colors.card,
             boxShadow: shadows.lg
@@ -535,6 +535,7 @@ const InternshipTable = () => {
                       <th className="px-6 py-4 font-semibold">Position</th>
                       <th className="px-6 py-4 font-semibold">Date Applied</th>
                       <th className="px-6 py-4 font-semibold">Status</th>
+                      <th className="px-4 py-2 font-semibold">Follow-Up Date</th>
                       <th className="px-6 py-4 font-semibold">Resume</th>
                       <th className="px-6 py-4 font-semibold">Comments</th>
                       <th className="px-6 py-4 font-semibold">Link</th>
@@ -590,6 +591,10 @@ const InternshipTable = () => {
                             {getStatusBadge(app.status)}
                           </td>
                           <td className="px-6 py-4 text-center">
+                            {app.followUpDate
+                              ? new Date(app.followUpDate).toLocaleDateString("en-GB"): "-"}
+                          </td>
+                          <td className="px-6 py-4 text-center">
                             {app.resume ? (
                               <a
                                 href={URL.createObjectURL(app.resume)}
@@ -641,13 +646,13 @@ const InternshipTable = () => {
                                   setEditEntry(app);
                                   setShowModal(true);
                                 }}
-                                className="text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
+                                className="text-md font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
                                 style={{ color: colors.primary }}
                               >
                                 Edit
                               </button>
                               <button
-                                className="text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
+                                className="text-md font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
                                 style={{ color: colors.destructive }}
                                 onClick={() => handleDeleteEntry(app._id)}
                               >
@@ -669,10 +674,10 @@ const InternshipTable = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
-                className="flex justify-between items-center mt-6 px-4"
+                className="flex justify-end items-center mt-6 px-4 gap-10"
                 style={{ color: colors.foreground }}
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <label htmlFor="rowsPerPage" className="font-medium text-sm">
                     Rows per page:
                   </label>
@@ -683,7 +688,7 @@ const InternshipTable = () => {
                       setRowsPerPage(Number(e.target.value));
                       setCurrentPage(1);
                     }}
-                    className="border rounded-lg px-3 py-1 text-sm transition-all duration-200 focus:ring-2 focus:ring-primary focus:outline-none"
+                    className="border rounded-lg px-4 py-1 text-sm transition-all duration-200 focus:ring-2 focus:ring-primary focus:outline-none"
                     style={{
                       backgroundColor: colors.input,
                       borderColor: colors.border,
@@ -698,7 +703,7 @@ const InternshipTable = () => {
                   </select>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <span className="font-medium text-sm">
                     Page {currentPage} of {Math.max(totalPages, 1)}
                   </span>

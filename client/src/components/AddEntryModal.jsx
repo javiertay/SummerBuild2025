@@ -9,6 +9,7 @@ const AddEntryModal = ({ onClose, onSubmit, onArchive, initialData }) => {
     position: "",
     date: "",
     status: "",
+    followUpDate: "",
     resume: null,
     comments: null,
     link: ""
@@ -23,6 +24,9 @@ const AddEntryModal = ({ onClose, onSubmit, onArchive, initialData }) => {
         position: initialData.position || "",
         date: initialData.date || "",
         status: initialData.status || "",
+        followUpDate: initialData.followUpDate
+        ? new Date(initialData.followUpDate).toISOString().split("T")[0]
+        : "",
         resume: null,
         comments: null,
         link: initialData.link || ""
@@ -152,6 +156,23 @@ const AddEntryModal = ({ onClose, onSubmit, onArchive, initialData }) => {
                   required
                 />
               </div>
+
+              {/* Followup Dates */}
+              <div className="flex flex-col">
+              <label htmlFor="followUpDate" className="mb-1 text-base text-gray-700">Follow-Up Date [Optional]</label>
+              <input
+                id="followUpDate"
+                name="followUpDate"
+                type="date"
+                value={formData.followUpDate || ""}
+                className="border p-2 rounded w-full"
+                 style={{
+                    backgroundColor: colors.input,
+                    borderColor: colors.border,
+                    color: colors.foreground}}
+                onChange={handleChange}
+              />
+            </div>
 
               {/* Status */}
               <div className="flex flex-col">

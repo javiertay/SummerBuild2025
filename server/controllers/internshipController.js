@@ -70,6 +70,11 @@ export const create = async (req, res) => {
             message: "Failed to create internship",
             error: error.message
         });
+        
+        // follow up date
+        if (internshipDataPayload.followUpDate === "") {
+        delete internshipDataPayload.followUpDate;
+        }
     }
 }
 
