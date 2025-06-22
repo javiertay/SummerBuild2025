@@ -21,7 +21,6 @@ export const transformExternalJob = (externalJob, index = 0) => {
     }
     return 'Remote';
   };
-
   return {
     id: externalJob.id || `ext_${index}`,
     title: externalJob.title || "Software Engineer Intern",
@@ -36,7 +35,11 @@ export const transformExternalJob = (externalJob, index = 0) => {
     jobType: externalJob.employment_type ? externalJob.employment_type.join(', ') : "Internship",
     remote: externalJob.remote_derived || false,
     tags: externalJob.tags || [],
-    organizationLogo: externalJob.organization_logo || null
+    organizationLogo: externalJob.organization_logo || null,
+    // Add additional useful fields
+    country: externalJob.countries_derived ? externalJob.countries_derived[0] : 'Unknown',
+    city: externalJob.cities_derived ? externalJob.cities_derived[0] : 'Unknown',
+    region: externalJob.regions_derived ? externalJob.regions_derived[0] : 'Unknown'
   };
 };
 
@@ -62,16 +65,22 @@ export const filterJobsBySkills = (jobs, skills) => {
   });
 };
 
-// Filter jobs based on location (improved matching)
+// Enhanced location filtering with better matching
 export const filterJobsByLocation = (jobs, location) => {
   if (!location || location === "All") return jobs;
   
   return jobs.filter(job => {
-    const jobLocation = job.location.toLowerCase();
     const filterLocation = location.toLowerCase();
     
-    // Check if the filter location is contained in the job location
-    return jobLocation.includes(filterLocation);
+    // Check various location fields for better matching
+    const locationMatches = [
+      job.location?.toLowerCase().includes(filterLocation),
+      job.country?.toLowerCase().includes(filterLocation),
+      job.city?.toLowerCase().includes(filterLocation),
+      job.region?.toLowerCase().includes(filterLocation)
+    ];
+    
+    return locationMatches.some(match => match);
   });
 };
 
@@ -95,4 +104,96 @@ export const getUniqueCompanies = (jobs) => {
     }
   });
   return Array.from(companies).sort();
+};
+
+// Get unique countries from jobs array
+export const getUniqueCountries = (jobs) => {
+  const countries = new Set();
+  jobs.forEach(job => {
+    if (job.country && job.country !== 'Unknown') {
+      countries.add(job.country);
+    }
+  });
+  return Array.from(countries).sort();
+};
+
+// Get unique cities from jobs array
+export const getUniqueCities = (jobs) => {
+  const cities = new Set();
+  jobs.forEach(job => {
+    if (job.city && job.city !== 'Unknown') {
+      cities.add(job.city);
+    }
+  });
+  return Array.from(cities).sort();
+};
+
+// Get unique regions from jobs array
+export const getUniqueRegions = (jobs) => {
+  const regions = new Set();
+  jobs.forEach(job => {
+    if (job.region && job.region !== 'Unknown') {
+      regions.add(job.region);
+    }
+  });
+  return Array.from(regions).sort();
+};
+
+// Generate dynamic location options (combining cities, regions, and countries)
+export const getDynamicLocationOptions = (jobs) => {
+  const options = new Set(['All']);
+  
+  jobs.forEach(job => {
+    // Add full location
+    if (job.location) {
+      options.add(job.location);
+    }
+    
+    // Add country
+    if (job.country && job.country !== 'Unknown') {
+      options.add(job.country);
+    }
+    
+    // Add city
+    if (job.city && job.city !== 'Unknown') {
+      options.add(job.city);
+    }
+    
+    // Add region
+    if (job.region && job.region !== 'Unknown') {
+      options.add(job.region);
+    }
+  });
+  
+  return Array.from(options).sort();
+};
+
+// Get unique sources from jobs array
+export const getUniqueSources = (jobs) => {
+  const sources = new Set();
+  jobs.forEach(job => {
+    if (job.source) {
+      sources.add(job.source);
+    }
+  });
+  return Array.from(sources).sort();
+};
+
+// Enhanced location filtering with better matching
+export const filterJobsByLocationEnhanced = (jobs, location) => {
+  if (!location || location === "All") return jobs;
+  
+  return jobs.filter(job => {
+    const filterLocation = location.toLowerCase();
+    
+    // Check various location fields
+    const locationMatches = [
+      job.location?.toLowerCase().includes(filterLocation),
+      job.country?.toLowerCase().includes(filterLocation),
+      job.city?.toLowerCase().includes(filterLocation),
+      job.region?.toLowerCase().includes(filterLocation)
+    ];
+    
+    return locationMatches.some(match => match);
+  });
 };
