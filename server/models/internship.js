@@ -55,7 +55,12 @@ const internshipSchema = new Schema({
                 message: props => `${props.value} is not a valid URL!`
             }
         }
-    }]
+    }],
+    archived: {
+        type: Boolean,
+        default: false,
+        required: true,
+    }
 });
 
 const Internship = model('Internship', internshipSchema);

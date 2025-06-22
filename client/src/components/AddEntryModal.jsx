@@ -298,11 +298,15 @@ const AddEntryModal = ({ onClose, onSubmit, onArchive, initialData }) => {
             <div className="flex justify-between items-center pt-4">
 
             {/* Archive Entry button */}
-
             {initialData && (
               <button
                 type="button"
-                onClick={() => onArchive(initialData.id)}
+                onClick={() => {
+                  console.log("archived:", initialData._id);
+                  onArchive(initialData._id);
+                  onClose();
+                  }
+                }
                 className="text-white px-4 py-2 rounded whitespace-nowrap transition-all duration-200 hover:scale-105 active:scale-95"
                 style={{
                   backgroundColor: initialData.archived ? "#10b981" : "#f59e0b"

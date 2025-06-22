@@ -24,6 +24,8 @@ import { getThemeColors, getThemeShadows } from "../utils/theme";
 import { getUserById } from "../api/index.js";
 import GradientText from "../components/GradientText";
 
+const currentUserID = JSON.parse(localStorage.getItem("profile"))?.id;
+
 const InternshipTable = () => {
   const [isDark, setIsDark] = useDarkMode();
   const [applications, setApplications] = useState([]);
@@ -119,14 +121,25 @@ const InternshipTable = () => {
   }, []);
 
   // (for archive entry)
-  const handleArchiveEntry = (id) => {
-    setApplications(
-      applications.map((app) =>
-        app.id === id ? { ...app, archived: !app.archived } : app
-      )
-    );
-    setShowModal(false);
-    setEditEntry(null);
+  // changed code here 
+  const handleArchiveEntry = async (id) => {
+    const target = applications.find(app => app._id === id);
+    const newArchived = !target.archived;
+    try{
+      await updateInternship(currentUserID, id, {archived: newArchived});
+      
+      setApplications(prev =>
+        prev.map(app =>
+          app._id === id ? { ...app, archived: newArchived } : app
+        )
+      );
+      setActiveTab("archived");
+      toast.success(newArchived? "Archived" : "Retrieved");
+    } catch (err) {
+      console.error("Archive failed:, err");
+      toast.error("Couldn't save archive state");
+    }
+    
   };
 
   // (for edit entry)
