@@ -14,9 +14,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import useDarkMode from "../hooks/useDarkMode";
 import { getInternship } from "../api/index.js";
-import { deleteInternship } from "../api/index"; // ensure imported
+import { deleteInternship } from "../api/index";
 import { toast } from "react-toastify";
 import { createInternship } from "../api/index";
+import { updateInternship } from "../api/index"; 
 import Navbar from "../components/Navbar";
 import FollowUpNotif from "../components/FollowUpNotif.jsx";
 import { getThemeColors, getThemeShadows } from "../utils/theme";
@@ -205,14 +206,34 @@ const InternshipTable = () => {
       alert("No user found");
       return;
     }
-
+if (entry._id) {
+    const payload = {
+      user: currentUser.id,
+      company: entry.company,
+      position: entry.position,
+      applicationDate: entry.applicationDate,
+      status: entry.status,
+      followUpDate: entry.followUpDate,
+      comments: entry.comments,
+      links: entry.link
+        ? [{ label: "Job Link", url: entry.link }]
+        : [],
+    };
+    try {
+      await updateInternship(currentUser.id, entry._id, payload);
+    } catch (error) {
+      console.error("Update failed:", error);
+      alert("Failed to update entry");
+    }
+  } else {
     const formData = new FormData();
-    // must include currentUser.id
     formData.append("user", currentUser.id);
     formData.append("company", entry.company);
     formData.append("position", entry.position);
-    formData.append("applicationDate", entry.date);
+    formData.append("applicationDate", entry.applicationDate || entry.date); 
     formData.append("status", entry.status);
+    if (entry.followUpDate)
+      formData.append("followUpDate", entry.followUpDate);
     if (entry.resume) formData.append("resume", entry.resume);
     if (entry.comments) formData.append("comments", entry.comments);
     if (entry.link) {
@@ -222,23 +243,24 @@ const InternshipTable = () => {
 
     try {
       await createInternship(formData);
-      setShowModal(false);
-
-      // ✅ Re-fetch full internship list from backend to get clean data
-      const { data } = await getInternship();
-      const currentUser =
-        JSON.parse(localStorage.getItem("profile")) ||
-        JSON.parse(sessionStorage.getItem("profile"));
-      const currentUserID = currentUser?.id;
-      const filteredData = data.filter(
-        (intern) => String(intern.user) === String(currentUserID)
-      );
-      setApplications(filteredData);
     } catch (error) {
-      console.error("Failed to create internship:", error);
-      alert("Something went wrong. Please check console.");
+      console.error("Create failed:", error);
+      alert("Failed to create entry");
     }
-  };
+  }
+
+  setShowModal(false);
+  setEditEntry(null);
+
+  // Refresh applications
+  const { data } = await getInternship();
+  const currentUserID = currentUser?.id;
+  const filteredData = data.filter(
+    (intern) => String(intern.user) === String(currentUserID)
+  );
+  setApplications(filteredData);
+};
+
 
   // (for status badges)
 
@@ -643,9 +665,17 @@ const InternshipTable = () => {
                             <div className="flex items-center justify-center gap-3">
                               <button
                                 onClick={() => {
-                                  setEditEntry(app);
-                                  setShowModal(true);
-                                }}
+                                setEditEntry({
+                                    ...app,
+                                applicationDate: app.applicationDate
+                                  ? new Date(app.applicationDate).toISOString()
+                                  : "",
+                                ...(app.followUpDate && {
+                                  followUpDate: new Date(app.followUpDate).toISOString(),
+                                }),
+                              });
+                                setShowModal(true);
+                              }}
                                 className="text-md font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
                                 style={{ color: colors.primary }}
                               >

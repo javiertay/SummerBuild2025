@@ -11,72 +11,79 @@ export const getAll = async (req, res) => {
 }
 
 
-export const create = async (req, res) => {
-    try {
-        console.log('Request body: ', req.body);
-        if (req.file) {
-            console.log('Request file: ', {
-                originalname: req.file.originalname,
-                mimetype: req.file.mimetype,
-                size: req.file.size
-            });
-        }
+eexport const create = async (req, res) => {
+  try {
+    console.log("Request body:", req.body);
 
-        const internshipDataPayload = { ...req.body };
+    const internshipDataPayload = { ...req.body };
 
-        if (req.file) {
-            internshipDataPayload.resume = {
-                data: req.file.buffer,
-                contentType: req.file.mimetype,
-                fileName: req.file.originalname
-            };
-        }
-        
-        // Handle incoming link and structure it for the schema
-        if (internshipDataPayload.link) {
-            internshipDataPayload.links = [{ label: 'Job Link', url: internshipDataPayload.link }];
-            delete internshipDataPayload.link; // Clean up the flat field
-        }
-
-        const internshipData = new Internship(internshipDataPayload);
-        
-        const savedInternship = await internshipData.save();
-        const responseInternship = savedInternship.toObject();
-        if (responseInternship.resume) {
-            delete responseInternship.resume.data;
-        }
-
-        res.status(201).json({
-            message: "Internship created successfully",
-            internship: responseInternship
-        });
-    } catch (error) {
-        console.error("Error creating internship:", error);
-        if (error.message === 'Only PDF files are allowed!') {
-            return res.status(400).json({
-                message: "Failed to create internship",
-                error: "Only PDF files are allowed for resumes."
-            });
-        }
-        // Handle Mongoose validation errors specifically if needed
-        if (error.name === 'ValidationError') {
-            return res.status(400).json({
-                message: "Failed to create internship due to validation errors",
-                error: error.message,
-                details: error.errors
-            });
-        }
-        res.status(500).json({
-            message: "Failed to create internship",
-            error: error.message
-        });
-        
-        // follow up date
-        if (internshipDataPayload.followUpDate === "") {
-        delete internshipDataPayload.followUpDate;
-        }
+    // ✅ Parse followUpDate correctly
+    if (internshipDataPayload.followUpDate === "") {
+      delete internshipDataPayload.followUpDate;
+    } else if (internshipDataPayload.followUpDate) {
+      internshipDataPayload.followUpDate = new Date(internshipDataPayload.followUpDate);
     }
-}
+
+    // ✅ Add resume
+    if (req.file) {
+      console.log("Request file:", {
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+      });
+
+      internshipDataPayload.resume = {
+        data: req.file.buffer,
+        contentType: req.file.mimetype,
+        fileName: req.file.originalname,
+      };
+    }
+
+    // ✅ Restructure link into `links` array
+    if (internshipDataPayload.link) {
+      internshipDataPayload.links = [
+        { label: "Job Link", url: internshipDataPayload.link },
+      ];
+      delete internshipDataPayload.link;
+    }
+
+    const internshipData = new Internship(internshipDataPayload);
+    const savedInternship = await internshipData.save();
+    const responseInternship = savedInternship.toObject();
+
+    // ✅ Remove binary data from response
+    if (responseInternship.resume) {
+      delete responseInternship.resume.data;
+    }
+
+    res.status(201).json({
+      message: "Internship created successfully",
+      internship: responseInternship,
+    });
+  } catch (error) {
+    console.error("Error creating internship:", error);
+
+    if (error.message === "Only PDF files are allowed!") {
+      return res.status(400).json({
+        message: "Failed to create internship",
+        error: "Only PDF files are allowed for resumes.",
+      });
+    }
+
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        message: "Failed to create internship due to validation errors",
+        error: error.message,
+        details: error.errors,
+      });
+    }
+
+    res.status(500).json({
+      message: "Failed to create internship",
+      error: error.message,
+    });
+  }
+};
 
 export const updateStatus = async (req, res) => {
     try {
@@ -86,7 +93,11 @@ export const updateStatus = async (req, res) => {
         if(!status){
             return res.status(400).json({message: "Status is required"});
         }
-        
+        if (internshipDataPayload.followUpDate === "") {
+        delete internshipDataPayload.followUpDate;
+        } else if (internshipDataPayload.followUpDate) {
+        internshipDataPayload.followUpDate = new Date(internshipDataPayload.followUpDate);
+        }
         const internship = await Internship.findById(internshipId);
 
         if(!internship){
@@ -116,39 +127,41 @@ export const updateInternship = async (req, res) => {
         const updateData = req.body;
 
         if (!internshipId) {
-            console.error('[updateInternship] Internship ID is undefined in params.');
-            return res.status(400).json({ success: false, message: "Internship ID is required in URL parameters." });
+        console.error('[updateInternship] Internship ID is undefined in params.');
+        return res.status(400).json({
+            success: false,
+            message: "Internship ID is required in URL parameters."
+        });
         }
 
         const updatedInternshipDoc = await Internship.findByIdAndUpdate(
-            internshipId,
-            updateData,
-            { new: true, runValidators: true }
+        internshipId,
+        updateData,
+        { new: true, runValidators: true }
         );
 
-
         if (!updatedInternshipDoc) {
-            return res.status(404).json({
-                success: false,
-                message: "Internship not found with the provided ID."
-            });
+        return res.status(404).json({
+            success: false,
+            message: "Internship not found with the provided ID."
+        });
         }
 
         res.status(200).json({
-            success: true,
-            message: "Internship updated successfully",
-            internship: updatedInternshipDoc
+        success: true,
+        message: "Internship updated successfully",
+        internship: updatedInternshipDoc
         });
 
     } catch (error) {
         console.error("[updateInternship] Error during update: ", error);
         res.status(500).json({
-            success: false,
-            message: "Failed to update internship",
-            error: error.message
+        success: false,
+        message: "Failed to update internship",
+        error: error.message
         });
     }
-}
+    };
 
 export const deleteInternship = async (req, res) => {
     try {

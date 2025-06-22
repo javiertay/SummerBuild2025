@@ -7,7 +7,7 @@ const AddEntryModal = ({ onClose, onSubmit, onArchive, initialData }) => {
   const [formData, setFormData] = useState({
     company: "",
     position: "",
-    date: "",
+    applicationDate: "",
     status: "",
     followUpDate: "",
     resume: null,
@@ -22,9 +22,11 @@ const AddEntryModal = ({ onClose, onSubmit, onArchive, initialData }) => {
       setFormData({
         company: initialData.company || "",
         position: initialData.position || "",
-        date: initialData.date || "",
+        applicationDate: initialData?.applicationDate
+        ? new Date(initialData.applicationDate).toISOString().split("T")[0]
+        : "",
         status: initialData.status || "",
-        followUpDate: initialData.followUpDate
+        followUpDate: initialData?.followUpDate
         ? new Date(initialData.followUpDate).toISOString().split("T")[0]
         : "",
         resume: null,
@@ -48,7 +50,11 @@ const AddEntryModal = ({ onClose, onSubmit, onArchive, initialData }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    const payload = {
+      ...formData,
+      _id: initialData?._id, 
+    };
+    onSubmit(payload);
   };
 
   return (
@@ -142,10 +148,10 @@ const AddEntryModal = ({ onClose, onSubmit, onArchive, initialData }) => {
                   Date Applied
                 </label>
                 <input
-                  id="date"
-                  name="date"
+                  id="applicationDate"
+                  name="applicationDate"
                   type="date"
-                  value={formData.date}
+                  value={formData.applicationDate}
                   className="border p-2 rounded w-full transition-all duration-200 focus:ring-2 focus:ring-primary"
                   style={{
                     backgroundColor: colors.input,
