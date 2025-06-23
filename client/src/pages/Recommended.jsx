@@ -11,7 +11,14 @@ import { toast } from "react-toastify";
 import useDarkMode from "../hooks/useDarkMode";
 import Navbar from "../components/Navbar";
 import { getExternalInternships, getRecommendedInternships, createInternship } from "../api/index";
-import { transformExternalJob } from "../utils/jobUtils";
+import { 
+  transformExternalJob, 
+  getDynamicLocationOptions, 
+  getUniqueCompanies, 
+  getUniqueSources,
+  filterJobsByLocation 
+} from "../utils/jobUtils";
+import { getThemeColors } from "../utils/theme";
 
 import {
   LineChart,
@@ -97,14 +104,20 @@ const mockJobs = [
 const COLORS = ["#3B82F6", "#60A5FA", "#93C5FD", "#BFDBFE"];
 
 const Recommended = () => {
-  const [isDark, setisDark] = useDarkMode();
+  const [isDark, setIsDark] = useDarkMode();
+  const colors = getThemeColors(isDark);
   const navigate = useNavigate();  const [externalJobs, setExternalJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [error, setError] = useState(null);  const [filteredJobs, setFilteredJobs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("All");
   const [companyFilter, setCompanyFilter] = useState("All");
+  const [sourceFilter, setSourceFilter] = useState("All");
+  
+  // Dynamic filter options
+  const [locationOptions, setLocationOptions] = useState(['All']);
+  const [companyOptions, setCompanyOptions] = useState(['All']);
+  const [sourceOptions, setSourceOptions] = useState(['All']);
 
   // Extract fetchExternalInternships as a separate function for reuse
   const fetchExternalInternships = async () => {
@@ -121,21 +134,33 @@ const Recommended = () => {
       
       // Don't filter by location initially - show all available jobs
       const data = await getRecommendedInternships(userSkills, "");
-      
-      // Add company logos to the data
+        // Add company logos to the data
       const jobsWithLogos = data.slice(0, 10).map(job => ({
         ...job,
         logo: getCompanyLogo(job.company)
       }));
       
-      setExternalJobs(jobsWithLogos);
+      console.log('🎯 Jobs with logos sample:', jobsWithLogos[0]);
+      console.log('📊 Available locations:', jobsWithLogos.map(job => job.location));
+      console.log('🏢 Available companies:', jobsWithLogos.map(job => job.company));
+      console.log('📡 Available sources:', jobsWithLogos.map(job => job.source));
+        setExternalJobs(jobsWithLogos);
       setFilteredJobs(jobsWithLogos);
+      
+      // Update dynamic filter options based on the fetched data
+      setLocationOptions(getDynamicLocationOptions(jobsWithLogos));
+      setCompanyOptions(['All', ...getUniqueCompanies(jobsWithLogos)]);
+      setSourceOptions(['All', ...getUniqueSources(jobsWithLogos)]);
     } catch (err) {
       console.error("Error fetching external internships:", err);
-      setError("Failed to load external internships. Using mock data.");
-      // Fallback to mock data if API fails
+      setError("Failed to load external internships. Using mock data.");      // Fallback to mock data if API fails
       setExternalJobs(mockJobs);
       setFilteredJobs(mockJobs);
+      
+      // Set default filter options for mock data
+      setLocationOptions(['All', 'Singapore', 'Remote']);
+      setCompanyOptions(['All', 'Shopee', 'Google', 'Grab', 'Sea Group', 'Bytedance']);
+      setSourceOptions(['All', 'LinkedIn', 'Indeed', 'MyCareersFuture', 'Glassdoor']);
     } finally {
       setLoading(false);
     }
@@ -152,8 +177,7 @@ const Recommended = () => {
   useEffect(() => {
     fetchExternalInternships();
   }, []);
-
-  // Filter jobs based on search term, location, and company
+  // Filter jobs based on search term, location, company, and source
   useEffect(() => {
     let filtered = externalJobs.length > 0 ? externalJobs : mockJobs;
 
@@ -163,17 +187,13 @@ const Recommended = () => {
         job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
         job.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
-    }    if (locationFilter !== "All") {
+    }
+
+    if (locationFilter !== "All") {
       console.log(`🌍 Filtering by location: "${locationFilter}"`);
       console.log('📍 Available locations:', filtered.map(job => job.location));
-      
-      filtered = filtered.filter(job => {
-        const jobLocation = job.location.toLowerCase();
-        const filterLocation = locationFilter.toLowerCase();
-        const matches = jobLocation.includes(filterLocation);
-        console.log(`${matches ? '✅' : '❌'} "${job.location}" ${matches ? 'matches' : 'does not match'} "${locationFilter}"`);
-        return matches;
-      });
+        // Use enhanced location filtering
+      filtered = filterJobsByLocation(filtered, locationFilter);
       
       console.log(`🌍 After location filter: ${filtered.length} jobs remaining`);
     }
@@ -182,8 +202,16 @@ const Recommended = () => {
       filtered = filtered.filter(job => 
         job.company.toLowerCase().includes(companyFilter.toLowerCase())
       );
-    }    setFilteredJobs(filtered);
-  }, [externalJobs, searchTerm, locationFilter, companyFilter]); // Add proper dependencies
+    }
+
+    if (sourceFilter !== "All") {
+      filtered = filtered.filter(job => 
+        job.source.toLowerCase().includes(sourceFilter.toLowerCase())
+      );
+    }
+
+    setFilteredJobs(filtered);
+  }, [externalJobs, searchTerm, locationFilter, companyFilter, sourceFilter]); // Add sourceFilter dependency
   // Helper function to get company logos
   const getCompanyLogo = (companyName) => {
     if (!companyName) return null;
@@ -246,14 +274,19 @@ const Recommended = () => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -30 }}
         transition={{ duration: 0.2 }}
-        className="min-h-screen bg-[#f8f4f3] p-4 sm:p-10 font-sans text-gray-900"
+        style={{
+          minHeight: '100vh',
+          background: colors.background,
+          color: colors.foreground,
+        }}
+        className="p-4 sm:p-10 font-sans transition-colors duration-300"
       >
         {/* Heading */}
         <div className="mb-6">
-          <h2 className="text-4xl font-extrabold text-blue-700 mb-2">
+          <h2 className="text-4xl font-extrabold mb-2" style={{ color: colors.primary }}>
             Recommended Listings
           </h2>
-          <p className="text-gray-600 text-lg">
+          <p className="text-lg" style={{ color: colors.mutedForeground }}>
             Based on your internship applications, we’ve curated job suggestions
             tailored to your interests.
           </p>
@@ -262,29 +295,29 @@ const Recommended = () => {
         {/* Line chart + pie chart */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
           {/* Application Activity */}
-          <div className="bg-white rounded-xl shadow-sm border p-5 h-full">
-            <h4 className="font-semibold text-gray-700 mb-3 text-lg">
+          <div className="rounded-xl shadow-sm border p-5 h-full" style={{ background: colors.card, borderColor: colors.border }}>
+            <h4 className="font-semibold mb-3 text-lg" style={{ color: colors.cardForeground }}>
               Application Activity
             </h4>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={applicationTimeline}>
-                <XAxis dataKey="week" />
-                <YAxis allowDecimals={false} />
-                <Tooltip contentStyle={{ borderRadius: "0.5rem" }} />
+                <XAxis dataKey="week" stroke={colors.mutedForeground} />
+                <YAxis allowDecimals={false} stroke={colors.mutedForeground} />
+                <Tooltip contentStyle={{ borderRadius: "0.5rem", background: colors.card, color: colors.cardForeground }} />
                 <Line
                   type="monotone"
                   dataKey="count"
-                  stroke="#3B82F6"
+                  stroke={colors.primary}
                   strokeWidth={3}
-                  dot={{ r: 4 }}
+                  dot={{ r: 4, stroke: colors.primary, fill: colors.background }}
                 />
               </LineChart>
             </ResponsiveContainer>
           </div>
 
           {/* Pie Chart – Role Focus */}
-          <div className="bg-white rounded-xl shadow-sm border p-5 h-full flex flex-col items-center justify-center">
-            <h4 className="font-semibold text-gray-700 mb-3 text-lg">
+          <div className="rounded-xl shadow-sm border p-5 h-full flex flex-col items-center justify-center" style={{ background: colors.card, borderColor: colors.border }}>
+            <h4 className="font-semibold mb-3 text-lg" style={{ color: colors.cardForeground }}>
               Application Role Focus
             </h4>
             <div className="w-full h-[280px] sm:h-[320px]">
@@ -305,7 +338,7 @@ const Recommended = () => {
                     {roleBreakdown.map((_, index) => (
                       <Cell
                         key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
+                        fill={colors.chart?.[index + 1] || colors.primary}
                       />
                     ))}
                   </Pie>
@@ -315,40 +348,41 @@ const Recommended = () => {
                     verticalAlign="bottom"
                     align="center"
                   />
-                  <Tooltip contentStyle={{ borderRadius: "0.5rem" }} />
+                  <Tooltip contentStyle={{ borderRadius: "0.5rem", background: colors.card, color: colors.cardForeground }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <p className="mt-3 text-sm text-gray-600 text-center">
+            <p className="mt-3 text-sm text-center" style={{ color: colors.mutedForeground }}>
               Shows how your applications are distributed across roles.
             </p>
           </div>
         </div>
 
         {/* Skill Match Score and Keyword Cloud */}
-        <div className="bg-white rounded-xl shadow-sm border p-5 mb-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="rounded-xl shadow-sm border p-5 mb-10 grid grid-cols-1 md:grid-cols-2 gap-6" style={{ background: colors.card, borderColor: colors.border }}>
           <div className="flex flex-col items-center justify-center">
-            <h4 className="font-semibold text-gray-700 text-lg mb-2">
+            <h4 className="font-semibold text-lg mb-2" style={{ color: colors.cardForeground }}>
               Skill Match Score
             </h4>
-            <div className="w-32 h-32 rounded-full bg-blue-100 flex items-center justify-center shadow-inner">
-              <span className="text-4xl font-extrabold text-blue-700">
+            <div className="w-32 h-32 rounded-full flex items-center justify-center shadow-inner" style={{ background: colors.accent }}>
+              <span className="text-4xl font-extrabold" style={{ color: colors.primary }}>
                 {matchScore}%
               </span>
             </div>
-            <p className="mt-2 text-sm text-gray-600 text-center">
+            <p className="mt-2 text-sm text-center" style={{ color: colors.mutedForeground }}>
               Reflects how well your skills align with the roles you applied to.
             </p>
           </div>
           <div className="flex flex-col">
-            <h4 className="font-semibold text-gray-700 mb-3 text-lg">
+            <h4 className="font-semibold mb-3 text-lg" style={{ color: colors.cardForeground }}>
               Frequently Mentioned Skills
             </h4>
             <div className="flex flex-wrap gap-3">
               {keywordCloud.map((word, index) => (
                 <span
                   key={index}
-                  className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full font-medium"
+                  className="px-3 py-1 text-sm rounded-full font-medium"
+                  style={{ background: colors.accent, color: colors.primary }}
                 >
                   {word}
                 </span>
@@ -358,8 +392,8 @@ const Recommended = () => {
         </div>
 
         {/* Tips Based on Activity */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-10 text-sm text-gray-700">
-          <h4 className="text-blue-700 font-semibold mb-2">
+        <div className="rounded-xl p-5 mb-10 text-sm" style={{ background: colors.secondary, border: `1px solid ${colors.accent}`, color: colors.cardForeground }}>
+          <h4 className="font-semibold mb-2" style={{ color: colors.primary }}>
             💡 Tips Based on Your Activity
           </h4>
           <ul className="list-disc pl-6 space-y-1">
@@ -373,14 +407,14 @@ const Recommended = () => {
             </li>
             <li>Explore more remote roles – your last 3 were all onsite.</li>
           </ul>
-        </div>        {/* Filter and Search Section */}
-        <div className="bg-white rounded-xl shadow-sm border p-5 mb-6">
-          <h4 className="font-semibold text-gray-700 text-lg mb-4">Filter Opportunities</h4>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        </div>
+        {/* Filter and Search Section */}
+        <div className="rounded-xl shadow-sm border p-5 mb-6" style={{ background: colors.card, borderColor: colors.border }}>
+          <h4 className="font-semibold text-lg mb-4" style={{ color: colors.cardForeground }}>Filter Opportunities</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Search Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: colors.mutedForeground }}>
                 Search by title or company
               </label>
               <input
@@ -388,92 +422,104 @@ const Recommended = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="e.g. Frontend Engineer, Google"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent"
+                style={{ borderColor: colors.input, background: colors.background, color: colors.foreground }}
               />
             </div>
-
             {/* Location Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: colors.mutedForeground }}>
                 Location
-              </label>              <select
+              </label>
+              <select
                 value={locationFilter}
                 onChange={(e) => setLocationFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent"
+                style={{ borderColor: colors.input, background: colors.background, color: colors.foreground }}
               >
-                <option value="All">All Locations</option>
-                <option value="Germany">Germany</option>
-                <option value="India">India</option>
-                <option value="Taiwan">Taiwan</option>
-                <option value="Malaysia">Malaysia</option>
-                <option value="Brazil">Brazil</option>
-                <option value="Sri Lanka">Sri Lanka</option>
-                <option value="Qatar">Qatar</option>
-                <option value="Remote">Remote</option>
+                {locationOptions.map(location => (
+                  <option key={location} value={location}>{location}</option>
+                ))}
               </select>
             </div>
-
             {/* Company Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Company Type
+              <label className="block text-sm font-medium mb-2" style={{ color: colors.mutedForeground }}>
+                Company
               </label>
               <select
                 value={companyFilter}
                 onChange={(e) => setCompanyFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent"
+                style={{ borderColor: colors.input, background: colors.background, color: colors.foreground }}
               >
-                <option value="All">All Companies</option>
-                <option value="Tech">Tech Companies</option>
-                <option value="Startup">Startups</option>
-                <option value="Finance">Finance</option>
-                <option value="E-commerce">E-commerce</option>
+                {companyOptions.map(company => (
+                  <option key={company} value={company}>{company}</option>
+                ))}
+              </select>
+            </div>
+            {/* Source Filter */}
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: colors.mutedForeground }}>
+                Source
+              </label>
+              <select
+                value={sourceFilter}
+                onChange={(e) => setSourceFilter(e.target.value)}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent"
+                style={{ borderColor: colors.input, background: colors.background, color: colors.foreground }}
+              >
+                {sourceOptions.map(source => (
+                  <option key={source} value={source}>{source}</option>
+                ))}
               </select>
             </div>
           </div>
-
           {/* Results Count */}
-          <div className="mt-4 text-sm text-gray-600">
-            Showing {filteredJobs.length} opportunities
+          <div className="mt-4 text-sm" style={{ color: colors.mutedForeground }}>
+            Showing {filteredJobs.length} of {externalJobs.length || mockJobs.length} opportunities
             {searchTerm && ` matching "${searchTerm}"`}
             {locationFilter !== "All" && ` in ${locationFilter}`}
+            {companyFilter !== "All" && ` at ${companyFilter}`}
+            {sourceFilter !== "All" && ` from ${sourceFilter}`}
           </div>
         </div>
-
         {/* Suggested Job Listings */}
         <div className="flex justify-between items-center mb-4">
-          <h4 className="font-semibold text-gray-700 text-lg">
+          <h4 className="font-semibold text-lg" style={{ color: colors.cardForeground }}>
             Suggested Opportunities
-            {loading && <span className="text-blue-600 ml-2">(Loading...)</span>}
-            {error && <span className="text-red-600 ml-2 text-sm">({error})</span>}
-          </h4>          <button
+            {loading && <span style={{ color: colors.primary }} className="ml-2">(Loading...)</span>}
+            {error && <span style={{ color: colors.destructive }} className="ml-2 text-sm">({error})</span>}
+          </h4>
+          <button
             onClick={handleRefreshJobs}
             disabled={loading}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-              loading 
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                : 'bg-blue-600 text-white hover:bg-blue-700'
-            }`}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${loading ? '' : 'hover:opacity-90'}`}
+            style={{
+              background: loading ? colors.muted : colors.primary,
+              color: loading ? colors.mutedForeground : colors.primaryForeground,
+              cursor: loading ? 'not-allowed' : 'pointer',
+            }}
           >
             🔄 Refresh Jobs
           </button>
         </div>
-        
         {loading ? (
           <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-10">
             {[...Array(6)].map((_, index) => (
-              <div key={index} className="p-5 rounded-xl bg-white border border-gray-200 animate-pulse">
-                <div className="h-10 w-20 bg-gray-200 rounded mb-3"></div>
-                <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded mb-3 w-3/4"></div>
-                <div className="h-6 bg-gray-200 rounded w-20"></div>
+              <div key={index} className="p-5 rounded-xl border animate-pulse" style={{ background: colors.card, borderColor: colors.border }}>
+                <div className="h-10 w-20" style={{ background: colors.muted, borderRadius: 8, marginBottom: 12 }}></div>
+                <div className="h-4" style={{ background: colors.muted, borderRadius: 8, marginBottom: 8 }}></div>
+                <div className="h-3 w-3/4" style={{ background: colors.muted, borderRadius: 8, marginBottom: 12 }}></div>
+                <div className="h-6 w-20" style={{ background: colors.muted, borderRadius: 8 }}></div>
               </div>
             ))}
-          </div>        ) : filteredJobs.length === 0 ? (
+          </div>
+        ) : filteredJobs.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-gray-400 text-6xl mb-4">🔍</div>
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">No opportunities found</h3>
-            <p className="text-gray-600 mb-4">
+            <div className="text-6xl mb-4" style={{ color: colors.mutedForeground }}>🔍</div>
+            <h3 className="text-lg font-semibold mb-2" style={{ color: colors.cardForeground }}>No opportunities found</h3>
+            <p className="mb-4" style={{ color: colors.mutedForeground }}>
               Try adjusting your search criteria or clearing filters to see more results.
             </p>
             <button
@@ -481,8 +527,10 @@ const Recommended = () => {
                 setSearchTerm("");
                 setLocationFilter("All");
                 setCompanyFilter("All");
+                setSourceFilter("All");
               }}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="px-4 py-2 rounded-lg transition"
+              style={{ background: colors.primary, color: colors.primaryForeground }}
             >
               Clear Filters
             </button>
@@ -492,7 +540,8 @@ const Recommended = () => {
             {filteredJobs.map((job) => (
               <div
                 key={job.id}
-                className="p-5 rounded-xl shadow-md bg-white border border-gray-200 hover:shadow-lg transition relative"
+                className="p-5 rounded-xl shadow-md border hover:shadow-lg transition relative"
+                style={{ background: colors.card, borderColor: colors.border }}
               >
                 {job.logo ? (
                   <img
@@ -501,55 +550,54 @@ const Recommended = () => {
                     className="h-10 w-auto mb-3 object-contain"
                   />
                 ) : (
-                  <div className="h-10 w-10 mb-3 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-blue-700 font-bold text-sm">
+                  <div className="h-10 w-10 mb-3 rounded-full flex items-center justify-center" style={{ background: colors.accent }}>
+                    <span className="font-bold text-sm" style={{ color: colors.primary }}>
                       {job.company?.charAt(0) || 'C'}
                     </span>
                   </div>
                 )}
-                <h3 className="text-lg font-bold text-blue-800 line-clamp-2">{job.title}</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="text-lg font-bold line-clamp-2" style={{ color: colors.primary }}>{job.title}</h3>
+                <p className="text-sm mb-2" style={{ color: colors.cardForeground }}>
                   {job.company} – {job.location}
                 </p>
-                
                 {job.salary && job.salary !== "Competitive" && (
-                  <p className="text-green-600 text-sm font-medium mb-2">
+                  <p className="text-sm font-medium mb-2" style={{ color: colors.secondary }}>
                     💰 {job.salary}
                   </p>
                 )}
-                
                 {job.description && (
-                  <p className="text-gray-600 text-xs mb-3 line-clamp-2">
+                  <p className="text-xs mb-3 line-clamp-2" style={{ color: colors.mutedForeground }}>
                     {job.description}
                   </p>
                 )}
-                  <div className="flex justify-between items-center gap-2">
-                  <span className="inline-block text-sm text-blue-600 font-medium bg-blue-100 px-2 py-1 rounded">
+                <div className="flex justify-between items-center gap-2">
+                  <span className="inline-block text-sm font-medium px-2 py-1 rounded" style={{ background: colors.accent, color: colors.primary }}>
                     Source: {job.source}
                   </span>
-                  
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleAddToTracker(job)}
-                      className="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition"
+                      className="text-xs px-2 py-1 rounded hover:opacity-90 transition"
+                      style={{ background: colors.secondary, color: colors.secondaryForeground }}
                       title="Add to your internship tracker"
                     >
                       + Track
                     </button>
-                    
                     {job.applyUrl && job.applyUrl !== "#" ? (
-                      <a 
+                      <a
                         href={job.applyUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
+                        className="text-xs px-2 py-1 rounded hover:opacity-90 transition"
+                        style={{ background: colors.primary, color: colors.primaryForeground }}
                       >
                         Apply
                       </a>
                     ) : (
-                      <button 
+                      <button
                         onClick={() => toast.info("Application link not available")}
-                        className="text-xs bg-gray-400 text-white px-2 py-1 rounded cursor-not-allowed"
+                        className="text-xs px-2 py-1 rounded cursor-not-allowed"
+                        style={{ background: colors.muted, color: colors.mutedForeground }}
                       >
                         Apply
                       </button>
@@ -560,10 +608,9 @@ const Recommended = () => {
             ))}
           </div>
         )}
-
         {/* Back to Dashboard */}
-        <div className="text-sm text-gray-600">
-          <Link to="/dashboard" className="text-blue-600 hover:underline">
+        <div className="text-sm" style={{ color: colors.mutedForeground }}>
+          <Link to="/dashboard" style={{ color: colors.primary }} className="hover:underline">
             ← Back to Internship Tracker
           </Link>
         </div>

@@ -37,6 +37,14 @@ export const updateInternshipStatus = (userId, internshipId, status) =>
 export const updateInternship = (userId, internshipId, formData) =>
   API.patch(`/internships/${userId}/internship/${internshipId}`, formData);
 
+// for dismissing followup notif 
+export const dismissFollowUp = (internshipId) =>
+  API.patch(`/internships/${internshipId}/dismiss-follow-up`);
+
+// for updating followup notif 
+export const updateFollowUp = (internshipId, payload) =>
+  API.patch(`/internships/${internshipId}/follow-up`, payload);
+
 
 // External API functions
 export const getExternalInternships = async () => {

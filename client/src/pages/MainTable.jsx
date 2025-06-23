@@ -18,11 +18,14 @@ import { deleteInternship } from "../api/index";
 import { toast } from "react-toastify";
 import { createInternship } from "../api/index";
 import { updateInternship } from "../api/index"; 
+import { dismissFollowUp, updateFollowUp } from "../api/index";
 import Navbar from "../components/Navbar";
 import FollowUpNotif from "../components/FollowUpNotif.jsx";
 import { getThemeColors, getThemeShadows } from "../utils/theme";
 import { getUserById } from "../api/index.js";
 import GradientText from "../components/GradientText";
+
+const currentUserID = JSON.parse(localStorage.getItem("profile"))?.id;
 
 const InternshipTable = () => {
   const [isDark, setIsDark] = useDarkMode();
@@ -50,17 +53,18 @@ const InternshipTable = () => {
     return followUpDate >= today || followUpDate < today; // both future and overdue
   });
 
-  const handleDismissFollowUp = (id) => {
+const handleDismissFollowUp = async (id) => {
+  try {
+    await updateFollowUp(internshipId, payload);
     setApplications((prev) =>
-      prev.map((app) => (app._id === id ? { ...app, status: "Pending" } : app))
+      prev.map((app) =>
+        app._id === id ? { ...app, followUpDismissed: true } : app
+      )
     );
-  };
-
-  const handleMarkDoneFollowUp = (id) => {
-    setApplications((prev) =>
-      prev.map((app) => (app._id === id ? { ...app, status: "Done" } : app))
-    );
-  };
+  } catch (error) {
+    console.error("Dismiss follow-up failed", error);
+  }
+};
 
   // retrieve all internship data
   useEffect(() => {
@@ -119,14 +123,25 @@ const InternshipTable = () => {
   }, []);
 
   // (for archive entry)
-  const handleArchiveEntry = (id) => {
-    setApplications(
-      applications.map((app) =>
-        app.id === id ? { ...app, archived: !app.archived } : app
-      )
-    );
-    setShowModal(false);
-    setEditEntry(null);
+  // changed code here 
+  const handleArchiveEntry = async (id) => {
+    const target = applications.find(app => app._id === id);
+    const newArchived = !target.archived;
+    try{
+      await updateInternship(currentUserID, id, {archived: newArchived});
+      
+      setApplications(prev =>
+        prev.map(app =>
+          app._id === id ? { ...app, archived: newArchived } : app
+        )
+      );
+      setActiveTab("archived");
+      toast.success(newArchived? "Archived" : "Retrieved");
+    } catch (err) {
+      console.error("Archive failed:, err");
+      toast.error("Couldn't save archive state");
+    }
+    
   };
 
   // (for edit entry)
@@ -354,7 +369,7 @@ if (entry._id) {
         style={{ backgroundColor: colors.background }}
       >
         <div
-          className="w-[85vw] h-[85vh] rounded-3xl shadow-xl px-6 py-3 overflow-auto flex flex-col transition-all duration-300"
+          className="w-[87vw] h-[88vh] rounded-3xl shadow-xl px-6 py-3 overflow-auto flex flex-col transition-all duration-300"
           style={{ 
             backgroundColor: colors.card,
             boxShadow: shadows.lg
@@ -362,13 +377,14 @@ if (entry._id) {
         >
           {/* New Header Section with 70/30 Split */}
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.15, delay: 0.02 }}
-            className="flex gap-6 mb-6"
-          >
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.15, delay: 0.02 }}
+        className="flex items-stretch gap-6 mb-6"
+      >
+
             {/* Left Section - 70% */}
-            <div className="w-[70%] flex flex-col gap-4">
+            <div className="w-[65%] flex flex-col gap-4">
               {/* Motivational Header */}
               <div className="text-left">
                 <h1
@@ -389,7 +405,7 @@ if (entry._id) {
               {/* Archive Tabs */}
               <div>
                 <div
-                  className="w-full max-w-lg p-1.5 flex justify-between rounded-2xl transition-all duration-300"
+                  className="w-full max-w-lg p-1.5 mb-5 mt-5 flex justify-between rounded-2xl transition-all duration-300"
                   style={{
                     backgroundColor: colors.muted,
                     boxShadow: shadows.sm
@@ -419,32 +435,18 @@ if (entry._id) {
                   </button>
                 </div>
               </div>
-            </div>
 
-            {/* Right Section - 30% */}
-            <div className="w-[30%]">
-              <FollowUpNotif
-                applications={applications}
-                isDark={isDark}
-                onDismiss={handleDismissFollowUp}
-                onMarkDone={handleMarkDoneFollowUp}
-              />
-            </div>
-          </motion.div>
-
-          {/* Main Content Container */}
-          <div className="flex-1 flex flex-col">
             {/* Search and Filters */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.15, delay: 0.05 }}
-              className="flex flex-wrap justify-between items-center mb-6 gap-4"
+              className="flex flex-wrap justify-between items-center mb-1 gap-4"
             >
               <div className="flex flex-wrap gap-4 items-center">
                 <div className="relative">
                   <MagnifyingGlassIcon
-                    className="w-5 h-5 absolute left-3 top-2.5 transition-colors"
+                    className="w-5 h-5 absolute left-3 top-3.75 transition-colors"
                     style={{ color: colors.mutedForeground }}
                   />
                   <input
@@ -463,13 +465,13 @@ if (entry._id) {
 
                 <div className="relative w-44">
                   <ClipboardDocumentCheckIcon
-                    className="w-5 h-5 absolute left-3 top-2.5 pointer-events-none transition-colors"
+                    className="w-5 h-5 absolute left-3 top-3.75 pointer-events-none transition-colors"
                     style={{ color: colors.mutedForeground }}
                   />
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="appearance-none shadow-sm w-full rounded-2xl py-3 pl-10 pr-8 focus:outline-none border transition-all duration-200 focus:ring-2 focus:ring-primary"
+                    className="appearance-none shadow-sm  w-full rounded-2xl py-3 pl-10 pr-8 focus:outline-none border transition-all duration-200 focus:ring-2 focus:ring-primary"
                     style={{
                       backgroundColor: colors.input,
                       borderColor: colors.border,
@@ -484,14 +486,14 @@ if (entry._id) {
                     <option value="Follow Up">Follow Up</option>
                   </select>
                   <ChevronDownIcon
-                    className="w-4 h-4 absolute right-3 top-3.5 pointer-events-none transition-colors"
+                    className="w-4 h-4 absolute right-3 top-4.25 pointer-events-none transition-colors"
                     style={{ color: colors.mutedForeground }}
                   />
                 </div>
 
                 <div className="relative w-44">
                   <CalendarDaysIcon
-                    className="w-5 h-5 absolute left-3 top-2.5 pointer-events-none transition-colors"
+                    className="w-5 h-5 absolute left-3 top-3.75 pointer-events-none transition-colors"
                     style={{ color: colors.mutedForeground }}
                   />
                   <select
@@ -509,30 +511,47 @@ if (entry._id) {
                     <option value="oldest">Oldest First</option>
                   </select>
                   <ChevronDownIcon
-                    className="w-4 h-4 absolute right-3 top-3.5 pointer-events-none transition-colors"
+                    className="w-4 h-4 absolute right-3 top-4.25 pointer-events-none transition-colors"
                     style={{ color: colors.mutedForeground }}
                   />
-                </div>
+                  </div>
+
+                  {/* Add Entry Button */}
+                  {activeTab === "current" && (
+                    <motion.button
+                      onClick={handleAddEntry}
+                      className="px-6 py-3 rounded-2xl shadow-sm transition-all duration-300 hover:scale-105 active:scale-95 font-semibold"
+                      style={{
+                        backgroundColor: colors.primary,
+                        color: colors.primaryForeground,
+                        boxShadow: shadows.sm
+                      }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      + Add New Entry
+                    </motion.button>
+                  )}
               </div>
-
-              {/* Add Entry Button */}
-              {activeTab === "current" && (
-                <motion.button
-                  onClick={handleAddEntry}
-                  className="px-6 py-3 rounded-2xl shadow-sm transition-all duration-300 hover:scale-105 active:scale-95 font-semibold"
-                  style={{
-                    backgroundColor: colors.primary,
-                    color: colors.primaryForeground,
-                    boxShadow: shadows.sm
-                  }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  + Add New Entry
-                </motion.button>
-              )}
             </motion.div>
+            </div>
+            {/* Right Side: Notification (no vertical space) */}
+            <div className="w-[35%] min-w-[280px] h-full flex flex-col">
+              <FollowUpNotif
+                applications={applications}
+                isDark={isDark}
+                onDismiss={handleDismissFollowUp}
+                onEdit={(entry) => {
+                  setEditEntry(entry);
+                  setShowModal(true);
+                }}
+              />
+            </div>
+          </motion.div>
 
+          {/* Main Content Container */}
+          <div className="flex-1 flex flex-col">
+            
             {/* Main Table */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -705,12 +724,11 @@ if (entry._id) {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-
-                transition={{ duration: 0.2, delay: 0.05 }}
-                className="flex justify-between items-center mt-6 px-4"
-
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="flex justify-end items-center mt-6 px-4 gap-10" // 👈 added gap-10
                 style={{ color: colors.foreground }}
               >
+                {/* Rows per page section */}
                 <div className="flex items-center gap-3">
                   <label htmlFor="rowsPerPage" className="font-medium text-sm">
                     Rows per page:
@@ -736,7 +754,6 @@ if (entry._id) {
                     ))}
                   </select>
                 </div>
-
                 <div className="flex items-center gap-3">
                   <span className="font-medium text-sm">
                     Page {currentPage} of {Math.max(totalPages, 1)}

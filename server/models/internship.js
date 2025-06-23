@@ -32,6 +32,11 @@ const internshipSchema = new Schema({
     required: false,
     },
     
+    followUpDismissed: {
+    type: Boolean,
+    default: false,
+    },
+    
     resume:{
         data: Buffer,
         contentType: String,
@@ -55,7 +60,12 @@ const internshipSchema = new Schema({
                 message: props => `${props.value} is not a valid URL!`
             }
         }
-    }]
+    }],
+    archived: {
+        type: Boolean,
+        default: false,
+        required: true,
+    }
 });
 
 const Internship = model('Internship', internshipSchema);
