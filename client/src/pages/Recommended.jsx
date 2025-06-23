@@ -561,7 +561,7 @@ const Recommended = () => {
                   {job.company} – {job.location}
                 </p>
                 {job.salary && job.salary !== "Competitive" && (
-                  <p className="text-sm font-medium mb-2" style={{ color: colors.secondary }}>
+                  <p className="text-sm font-medium mb-2" style={{ color: colors.cardForeground }}>
                     💰 {job.salary.value.minValue}/{job.salary.value.unitText} - {job.salary.value.maxValue}/{job.salary.value.unitText}
                   </p>
                 )}
