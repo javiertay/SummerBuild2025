@@ -45,7 +45,7 @@ const Signup = () => {
         email,
         password,
       });
-      sessionStorage.setItem("profile", JSON.stringify(data));
+      sessionStorage.setItem("profile", JSON.stringify(data.user));
 
       toast.success("Account created successfully");
       setEmail("");
