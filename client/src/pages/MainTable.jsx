@@ -171,10 +171,10 @@ const handleDismissFollowUp = async (id) => {
   const [dateFilter, setDateFilter] = useState("");
   const sortedApplications = [...filteredApplications];
   if (dateFilter === "newest") {
-    sortedApplications.sort((a, b) => new Date(b.date) - new Date(a.date));
-  } else if (dateFilter === "oldest") {
-    sortedApplications.sort((a, b) => new Date(a.date) - new Date(b.date));
-  }
+  sortedApplications.sort((a, b) => new Date(b.applicationDate) - new Date(a.applicationDate));
+} else if (dateFilter === "oldest") {
+  sortedApplications.sort((a, b) => new Date(a.applicationDate) - new Date(b.applicationDate));
+}
 
   // (Paginate the sorted results)
 
