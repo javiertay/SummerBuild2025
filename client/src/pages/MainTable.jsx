@@ -18,6 +18,7 @@ import { deleteInternship } from "../api/index";
 import { toast } from "react-toastify";
 import { createInternship } from "../api/index";
 import { updateInternship } from "../api/index"; 
+import { dismissFollowUp, updateFollowUp } from "../api/index";
 import Navbar from "../components/Navbar";
 import FollowUpNotif from "../components/FollowUpNotif.jsx";
 import { getThemeColors, getThemeShadows } from "../utils/theme";
@@ -52,17 +53,18 @@ const InternshipTable = () => {
     return followUpDate >= today || followUpDate < today; // both future and overdue
   });
 
-  const handleDismissFollowUp = (id) => {
+const handleDismissFollowUp = async (id) => {
+  try {
+    await updateFollowUp(internshipId, payload);
     setApplications((prev) =>
-      prev.map((app) => (app._id === id ? { ...app, status: "Pending" } : app))
+      prev.map((app) =>
+        app._id === id ? { ...app, followUpDismissed: true } : app
+      )
     );
-  };
-
-  const handleMarkDoneFollowUp = (id) => {
-    setApplications((prev) =>
-      prev.map((app) => (app._id === id ? { ...app, status: "Done" } : app))
-    );
-  };
+  } catch (error) {
+    console.error("Dismiss follow-up failed", error);
+  }
+};
 
   // retrieve all internship data
   useEffect(() => {

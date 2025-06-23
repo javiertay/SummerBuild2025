@@ -186,3 +186,64 @@ export const deleteInternship = async (req, res) => {
         })
     }
 }
+export const dismissFollowUp = async (req, res) => {
+  try {
+    const { internshipId } = req.params;
+
+    const updated = await Internship.findByIdAndUpdate(
+      internshipId,
+      { followUpDismissed: true },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Internship not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Follow-up dismissed successfully",
+      internship: updated,
+    });
+  } catch (error) {
+    console.error("Error dismissing follow-up:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to dismiss follow-up",
+      error: error.message,
+    });
+  }
+};
+export const updateFollowUp = async (req, res) => {
+  try {
+    const { internshipId } = req.params;
+    const { followUpDate, status } = req.body;
+
+    const updatePayload = {};
+    if (followUpDate) updatePayload.followUpDate = new Date(followUpDate);
+    if (status) updatePayload.status = status;
+
+    const updated = await Internship.findByIdAndUpdate(
+      internshipId,
+      updatePayload,
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Internship not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Follow-up updated successfully",
+      internship: updated,
+    });
+  } catch (error) {
+    console.error("Error updating follow-up:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update follow-up",
+      error: error.message,
+    });
+  }
+};

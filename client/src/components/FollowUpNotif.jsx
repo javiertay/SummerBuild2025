@@ -7,6 +7,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { getThemeColors, getThemeShadows } from "../utils/theme";
 import React, { useState } from "react"
+import { dismissFollowUp, updateFollowUp } from "../api/index";
 
 
 
@@ -103,9 +104,9 @@ const FollowUpNotif = ({ applications, isDark, onDismiss, onEdit }) => {
             const isOverdue = diffDays < 0;
 
             const icon = isOverdue ? (
-              <ExclamationCircleIcon className="h-8 w-8 text-orange-500" />
+              <ExclamationCircleIcon className="h-8 w-8 text-green-600" />
             ) : (
-              <ClockIcon className="h-8 w-8 text-green-600" />
+              <ClockIcon className="h-8 w-8 text-orange-500" />
             );
 
             const message = isOverdue
@@ -128,7 +129,7 @@ const FollowUpNotif = ({ applications, isDark, onDismiss, onEdit }) => {
                 <div
                   className="w-2"
                   style={{
-                    backgroundColor: isOverdue ? "#f59e0b" : "#10b981"
+                    backgroundColor: isOverdue ? "#10b981" : "#f59e0b"
                   }}
                 />
 
@@ -163,7 +164,14 @@ const FollowUpNotif = ({ applications, isDark, onDismiss, onEdit }) => {
                   {/* Buttons */}
                   <div className="flex flex-col sm:flex-row gap-2 sm:gap-1 items-end sm:items-center">
                     <button
-                      onClick={() => setDismissedIds(prev => [...prev, app._id])}
+                      onClick={async () => {
+                        try {
+                          await dismissFollowUp(app._id);
+                            setDismissedIds(prev => [...prev, app._id]);
+                        } catch (error) {
+                          console.error("Dismiss failed", error);
+                        }
+                      }}
                       className="px-3 py-1 text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 active:scale-95"
                       style={{
                         backgroundColor: colors.input,
@@ -174,17 +182,25 @@ const FollowUpNotif = ({ applications, isDark, onDismiss, onEdit }) => {
                       Dismiss
                     </button>
                     <button
-                      onClick={() =>
-                        onEdit({
-                          ...app,
-                          applicationDate: app.applicationDate
-                            ? new Date(app.applicationDate).toISOString()
-                            : "",
-                          ...(app.followUpDate && {
-                            followUpDate: new Date(app.followUpDate).toISOString()
-                          })
-                        })
-                      }
+                      onClick={async () => {
+                        try {
+                          await updateFollowUp(app._id, {
+                            followUpDate: app.followUpDate,
+                            status: app.status
+                          });
+                          onEdit({
+                            ...app,
+                            applicationDate: app.applicationDate
+                              ? new Date(app.applicationDate).toISOString()
+                              : "",
+                            ...(app.followUpDate && {
+                              followUpDate: new Date(app.followUpDate).toISOString()
+                            })
+                          });
+                        } catch (error) {
+                          console.error("Update follow-up failed", error);
+                        }
+                      }}
                       className="px-3 py-1 text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 active:scale-95"
                       style={{
                         backgroundColor: colors.primary,

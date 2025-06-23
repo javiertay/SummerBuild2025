@@ -32,6 +32,11 @@ const internshipSchema = new Schema({
     required: false,
     },
     
+    followUpDismissed: {
+    type: Boolean,
+    default: false,
+    },
+    
     resume:{
         data: Buffer,
         contentType: String,
