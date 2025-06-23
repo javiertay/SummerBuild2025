@@ -30,7 +30,7 @@ const AddEntryModal = ({ onClose, onSubmit, onArchive, initialData }) => {
           ? new Date(initialData.followUpDate).toISOString().split("T")[0]
           : "",
         resume: null,
-        comments: null,
+        comments: initialData.comments || "",
         link: initialData.link || "",
       });
     }
