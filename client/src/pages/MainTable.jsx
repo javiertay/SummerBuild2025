@@ -658,7 +658,8 @@ const handleDismissFollowUp = async (id) => {
                               ? new Date(app.followUpDate).toLocaleDateString("en-GB"): "-"}
                           </td>                          
                           <td className="px-6 py-4 text-center">
-                            {app.resume ? (                              <a
+                            {app.resume ? (
+                              <a
                                 href={`http://localhost:3000/api/internships/${app._id}/resume`}
                                 target="_blank"
                                 rel="noopener noreferrer"
