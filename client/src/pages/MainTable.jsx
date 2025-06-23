@@ -367,7 +367,7 @@ if (entry._id) {
         style={{ backgroundColor: colors.background }}
       >
         <div
-          className="w-[87vw] h-[85vh] rounded-3xl shadow-xl px-6 py-3 overflow-auto flex flex-col transition-all duration-300"
+          className="w-[87vw] h-[88vh] rounded-3xl shadow-xl px-6 py-3 overflow-auto flex flex-col transition-all duration-300"
           style={{ 
             backgroundColor: colors.card,
             boxShadow: shadows.lg
@@ -382,7 +382,7 @@ if (entry._id) {
       >
 
             {/* Left Section - 70% */}
-            <div className="w-[70%] flex flex-col gap-4">
+            <div className="w-[65%] flex flex-col gap-4">
               {/* Motivational Header */}
               <div className="text-left">
                 <h1
@@ -534,12 +534,15 @@ if (entry._id) {
             </motion.div>
             </div>
             {/* Right Side: Notification (no vertical space) */}
-            <div className="w-[30%] min-w-[280px] h-full flex flex-col">
+            <div className="w-[35%] min-w-[280px] h-full flex flex-col">
               <FollowUpNotif
                 applications={applications}
                 isDark={isDark}
                 onDismiss={handleDismissFollowUp}
-                onMarkDone={handleMarkDoneFollowUp}
+                onEdit={(entry) => {
+                  setEditEntry(entry);
+                  setShowModal(true);
+                }}
               />
             </div>
           </motion.div>

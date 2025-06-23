@@ -1,120 +1,205 @@
-import React from "react";
 import { motion } from "framer-motion";
+import {
+  BellAlertIcon,
+  ExclamationCircleIcon,
+  ClockIcon,
+  CheckCircleIcon
+} from "@heroicons/react/24/outline";
 import { getThemeColors, getThemeShadows } from "../utils/theme";
+import React, { useState } from "react"
 
-const FollowUpNotif = ({ applications, isDark, onDismiss, onMarkDone }) => {
+
+
+const FollowUpNotif = ({ applications, isDark, onDismiss, onEdit }) => {
   const colors = getThemeColors(isDark);
   const shadows = getThemeShadows(isDark);
 
+  const [dismissedIds, setDismissedIds] = useState([]);
   const today = new Date();
-  const followUps = applications.filter((app) => {
-    if (app.status?.toLowerCase() !== "follow up") return false;
-    const followUpDate = new Date(app.followUpDate || app.applicationDate);
-    return followUpDate >= today || followUpDate < today;
+  const upcoming = [];
+  const overdue = [];
+
+  applications.forEach((app) => {
+    if (app.status?.toLowerCase() !== "follow up") return;
+
+    const dateToCheck = new Date(app.followUpDate || app.applicationDate);
+    const diffTime = dateToCheck.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+      overdue.push(app);
+    } else if (diffDays >= 1 && diffDays <= 3) {
+      upcoming.push(app);
+    }
   });
 
-  if (followUps.length === 0) {
-    return (
-      <div
-        className="min-h-[250px] rounded-2xl border p-4 transition-all duration-300"
-        style={{
-          backgroundColor: colors.card,
-          borderColor: colors.border,
-          boxShadow: shadows.sm
-        }}
-      >
-        <h3
-          className="text-lg font-semibold mb-3 transition-colors"
-          style={{ color: colors.foreground }}
-        >
-          Follow-ups to Track
-        </h3>
+  const visibleUpcoming = upcoming.filter(app => !dismissedIds.includes(app._id));
+  const visibleOverdue = overdue.filter(app => !dismissedIds.includes(app._id));
+
+  const nothingToShow = visibleUpcoming.length === 0 && visibleOverdue.length === 0;
+
+  return (
+    <div
+      className="rounded-2xl border p-4 transition-all duration-300"
+      style={{
+        backgroundColor: colors.card,
+        borderColor: colors.border,
+        boxShadow: shadows.sm,
+        height: "250px",
+        overflowY: "auto",
+        overflowX: "hidden",
+        scrollbarWidth: "thin"
+      }}
+    >
+      {/* Header */}
+      <div className="flex justify-between items-center mb-3">
+        <div className="flex items-center gap-2">
+          <BellAlertIcon className="h-7 w-7 text-orange-500" />
+          <h3
+            className="text-lg font-semibold transition-colors"
+            style={{ color: colors.foreground }}
+          >
+            Track Follow-ups
+          </h3>
+        </div>
+
+        <div className="flex gap-2">
+          {visibleUpcoming.length > 0 && (
+            <span
+              className="text-sm px-3 py-1 rounded-xl font-semibold"
+              style={{ backgroundColor: "#f59e0b", color: "white" }}
+            >
+              Prepare: {visibleUpcoming.length}
+            </span>
+          )}
+          {visibleOverdue.length > 0 && (
+            <span
+              className="text-sm px-3 py-1 rounded-xl font-semibold"
+              style={{ backgroundColor: "#10b981", color: "white" }}
+            >
+              Update: {visibleOverdue.length}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Content */}
+      {nothingToShow ? (
         <div
           className="text-center py-8 transition-colors"
           style={{ color: colors.mutedForeground }}
         >
-          <div className="text-4xl mb-2">✅</div>
-          <p className="text-sm">No follow-ups needed</p>
+          <CheckCircleIcon className="h-15 w-15 text-green-500 mx-auto mb-2" />
+          <p className="text-xl">No follow-ups needed</p>
         </div>
-      </div>
-    );
-  }
+      ) : (
+        <div className="space-y-3">
+          {[...visibleOverdue, ...visibleUpcoming]
+            .filter(app => !dismissedIds.includes(app._id))
+            .map((app, index) => {
+            const followUpDate = new Date(app.followUpDate || app.applicationDate);
+            const diffTime = followUpDate.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const isOverdue = diffDays < 0;
 
-  return (
-    <div
-      className="min-h-[230px] rounded-2xl border p-4 transition-all duration-300 overflow-auto"
-      style={{
-        backgroundColor: colors.card,
-        borderColor: colors.border,
-        boxShadow: shadows.sm
-      }}
-    >
-      <h3
-        className="text-lg font-semibold mb-3 transition-colors"
-        style={{ color: colors.foreground }}
-      >
-        Follow-ups to Track ({followUps.length})
-      </h3>
-      <div className="space-y-3">
-        {followUps.map((app, index) => (
-          <motion.div
-            key={app._id}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.1, delay: index * 0.05 }}
-            className="p-3 rounded-lg border transition-all duration-200 hover:scale-[1.02]"
-            style={{
-              backgroundColor: colors.accent,
-              borderColor: colors.border
-            }}
-          >
-            <div className="flex justify-between items-start mb-2">
-              <div className="flex-1">
-                <h4
-                  className="font-semibold text-sm transition-colors"
-                  style={{ color: colors.foreground }}
-                >
-                  {app.company}
-                </h4>
-                <p
-                  className="text-xs transition-colors"
-                  style={{ color: colors.mutedForeground }}
-                >
-                  {app.position}
-                </p>
-              </div>
-              <div className="flex gap-1 ml-2">
-                <button
-                  onClick={() => onDismiss(app._id)}
-                  className="px-2 py-1 text-xs rounded transition-all duration-200 hover:scale-105 active:scale-95"
+            const icon = isOverdue ? (
+              <ExclamationCircleIcon className="h-8 w-8 text-orange-500" />
+            ) : (
+              <ClockIcon className="h-8 w-8 text-green-600" />
+            );
+
+            const message = isOverdue
+              ? "Follow-up update"
+              : `Prepare in ${diffDays} day${diffDays === 1 ? "" : "s"}`;
+
+            return (
+              <motion.div
+                key={app._id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.1, delay: index * 0.05 }}
+                className="flex rounded-xl overflow-hidden transition-all duration-200 hover:scale-[1.01]"
+                style={{
+                  backgroundColor: colors.muted,
+                  boxShadow: shadows.sm
+                }}
+              >
+                {/* Left colored strip */}
+                <div
+                  className="w-2"
                   style={{
-                    backgroundColor: colors.muted,
-                    color: colors.mutedForeground
+                    backgroundColor: isOverdue ? "#f59e0b" : "#10b981"
                   }}
-                >
-                  Dismiss
-                </button>
-                <button
-                  onClick={() => onMarkDone(app._id)}
-                  className="px-2 py-1 text-xs rounded transition-all duration-200 hover:scale-105 active:scale-95 font-semibold"
-                  style={{
-                    backgroundColor: colors.primary,
-                    color: colors.primaryForeground
-                  }}
-                >
-                  Done
-                </button>
-              </div>
-            </div>
-            <div
-              className="text-xs transition-colors"
-              style={{ color: colors.mutedForeground }}
-            >
-              Applied: {new Date(app.applicationDate).toLocaleDateString("en-GB")}
-            </div>
-          </motion.div>
-        ))}
-      </div>
+                />
+
+                {/* Icon and Content */}
+                <div className="flex items-center p-3 gap-4 w-full">
+                  {/* Icon */}
+                  <div>{icon}</div>
+
+                  {/* Text */}
+                  <div className="flex-1">
+                    <h4
+                      className="font-semibold text-base"
+                      style={{ color: colors.foreground }}
+                    >
+                      {app.company}
+                    </h4>
+                    <p
+                      className="text-sm"
+                      style={{ color: colors.mutedForeground }}
+                    >
+                      {app.position} — {message}
+                    </p>
+                    <div
+                      className="text-xs"
+                      style={{ color: colors.mutedForeground }}
+                    >
+                      Follow-up Date:{" "}
+                      {followUpDate.toLocaleDateString("en-GB")}
+                    </div>
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-1 items-end sm:items-center">
+                    <button
+                      onClick={() => setDismissedIds(prev => [...prev, app._id])}
+                      className="px-3 py-1 text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 active:scale-95"
+                      style={{
+                        backgroundColor: colors.input,
+                        color: colors.mutedForeground,
+                        border: `1px solid ${colors.border}`
+                      }}
+                    >
+                      Dismiss
+                    </button>
+                    <button
+                      onClick={() =>
+                        onEdit({
+                          ...app,
+                          applicationDate: app.applicationDate
+                            ? new Date(app.applicationDate).toISOString()
+                            : "",
+                          ...(app.followUpDate && {
+                            followUpDate: new Date(app.followUpDate).toISOString()
+                          })
+                        })
+                      }
+                      className="px-3 py-1 text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 active:scale-95"
+                      style={{
+                        backgroundColor: colors.primary,
+                        color: colors.primaryForeground
+                      }}
+                    >
+                      Update
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
