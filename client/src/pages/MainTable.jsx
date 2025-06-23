@@ -218,63 +218,83 @@ const handleDismissFollowUp = async (id) => {
       JSON.parse(localStorage.getItem("profile")) ||
       JSON.parse(sessionStorage.getItem("profile"));
     if (!currentUser) {
-      alert("No user found");
+      toast.error("No user found");
       return;
     }
-if (entry._id) {
-    const payload = {
-      user: currentUser.id,
-      company: entry.company,
-      position: entry.position,
-      applicationDate: entry.applicationDate,
-      status: entry.status,
-      followUpDate: entry.followUpDate,
-      comments: entry.comments,
-      links: entry.link
-        ? [{ label: "Job Link", url: entry.link }]
-        : [],
-    };
-    try {
-      await updateInternship(currentUser.id, entry._id, payload);
-    } catch (error) {
-      console.error("Update failed:", error);
-      alert("Failed to update entry");
+    
+    // For editing existing entry
+    if (entry._id) {
+      const payload = {
+        user: currentUser.id,
+        company: entry.company,
+        position: entry.position,
+        applicationDate: entry.applicationDate,
+        status: entry.status,
+        followUpDate: entry.followUpDate,
+        comments: entry.comments,
+        links: entry.link
+          ? [{ label: "Job Link", url: entry.link }]
+          : [],
+      };
+      try {
+        await updateInternship(currentUser.id, entry._id, payload);
+        toast.success("Entry updated successfully");
+      } catch (error) {
+        console.error("Update failed:", error);
+        toast.error(error.response?.data?.error || "Failed to update entry");
+      }
+    } 
+    // For creating new entry
+    else {
+      const formData = new FormData();
+      formData.append("user", currentUser.id);
+      formData.append("company", entry.company);
+      formData.append("position", entry.position);
+      formData.append("applicationDate", entry.applicationDate || entry.date); 
+      formData.append("status", entry.status);
+      
+      if (entry.followUpDate)
+        formData.append("followUpDate", entry.followUpDate);
+      
+      if (entry.resume) {
+        // Log file info for debugging
+        console.log("Appending resume file:", entry.resume.name, entry.resume.type, entry.resume.size);
+        formData.append("resume", entry.resume);
+      }
+      
+      if (entry.comments) formData.append("comments", entry.comments);
+      
+      if (entry.link) {
+        formData.append("link", entry.link);
+      }
+
+      try {
+        const response = await createInternship(formData);
+        console.log("Create success:", response);
+        toast.success("Entry created successfully");
+      } catch (error) {
+        console.error("Create failed:", error.response || error);
+        const errorMsg = error.response?.data?.error || "Failed to create entry";
+        toast.error(errorMsg);
+      }
     }
-  } else {
-    const formData = new FormData();
-    formData.append("user", currentUser.id);
-    formData.append("company", entry.company);
-    formData.append("position", entry.position);
-    formData.append("applicationDate", entry.applicationDate || entry.date); 
-    formData.append("status", entry.status);
-    if (entry.followUpDate)
-      formData.append("followUpDate", entry.followUpDate);
-    if (entry.resume) formData.append("resume", entry.resume);
-    if (entry.comments) formData.append("comments", entry.comments);
-    if (entry.link) {
-      formData.append("links[0][label]", "Job Link");
-      formData.append("links[0][url]", entry.link);
-    }
+
+    setShowModal(false);
+    setEditEntry(null);
 
     try {
-      await createInternship(formData);
+      // Refresh applications
+      const { data } = await getInternship();
+      const currentUserID = currentUser?.id;
+      const filteredData = data.filter(
+        (intern) => String(intern.user) === String(currentUserID)
+      );
+      setApplications(filteredData);
     } catch (error) {
-      console.error("Create failed:", error);
-      alert("Failed to create entry");
+      console.error("Failed to refresh data:", error);
+      toast.error("Failed to refresh data");
     }
-  }
-
-  setShowModal(false);
-  setEditEntry(null);
-
-  // Refresh applications
-  const { data } = await getInternship();
-  const currentUserID = currentUser?.id;
-  const filteredData = data.filter(
-    (intern) => String(intern.user) === String(currentUserID)
-  );
-  setApplications(filteredData);
-};
+  };
 
 
   // (for status badges)
@@ -636,11 +656,9 @@ if (entry._id) {
                           <td className="px-6 py-4 text-center">
                             {app.followUpDate
                               ? new Date(app.followUpDate).toLocaleDateString("en-GB"): "-"}
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            {app.resume ? (
-                              <a
-                                href={URL.createObjectURL(app.resume)}
+                          </td>                          <td className="px-6 py-4 text-center">
+                            {app.resume ? (                              <a
+                                href={`http://localhost:3000/api/internships/${app._id}/resume`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="underline transition-all duration-200 hover:scale-105"

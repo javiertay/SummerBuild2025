@@ -209,22 +209,20 @@ const AddEntryModal = ({ onClose, onSubmit, onArchive, initialData }) => {
                   <option value="Pending">Pending</option>
                   <option value="Follow Up">Follow Up</option>
                 </select>
-              </div>
-
-              {/* Resume Upload */}
+              </div>              {/* Resume Upload */}
               <div className="flex flex-col">
                 <label 
                   htmlFor="resume" 
                   className="mb-1 text-base"
                   style={{ color: colors.foreground }}
                 >
-                  Upload CV / Resume [Optional]
+                  Upload CV / Resume [Optional, PDF only]
                 </label>
                 <input
                   id="resume"
                   name="resume"
                   type="file"
-                  accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                  accept=".pdf"
                   className="file:mr-4 file:py-2 file:px-4 file:rounded-2xl file:border-0 file:text-sm file:font-semibold border p-2 rounded w-full transition-all duration-200 focus:ring-2 focus:ring-primary"
                   style={{
                     backgroundColor: colors.input,
@@ -236,6 +234,9 @@ const AddEntryModal = ({ onClose, onSubmit, onArchive, initialData }) => {
                 {formData.resume && (
                   <p className="mt-1 text-sm" style={{ color: colors.mutedForeground }}>
                     Selected: <span style={{ color: colors.primary }}>{formData.resume.name}</span>
+                    {!formData.resume.name.toLowerCase().endsWith('.pdf') && (
+                      <span className="text-red-500 block">Warning: Only PDF files are allowed!</span>
+                    )}
                   </p>
                 )}
               </div>

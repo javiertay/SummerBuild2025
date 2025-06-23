@@ -23,7 +23,15 @@ export const getUserById = (userId) => API.get(`/users/${userId}`);
 
 // this is for Add Entry
 export const getInternship = () => API.get('/internships');
-export const createInternship = (formData) =>API.post('/internships', formData,);
+
+// Improved internship creation with proper file upload handling
+export const createInternship = (formData) => {
+  return API.post('/internships', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};
 
 // for delete entry
 export const deleteInternship = (userId, internshipId) =>

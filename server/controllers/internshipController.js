@@ -47,6 +47,14 @@ export const create = async (req, res) => {
       delete internshipDataPayload.link;
     }
 
+    // Ensure user ID is properly set
+    if (!internshipDataPayload.user) {
+      return res.status(400).json({
+        message: "Failed to create internship",
+        error: "User ID is required",
+      });
+    }
+
     const internshipData = new Internship(internshipDataPayload);
     const savedInternship = await internshipData.save();
     const responseInternship = savedInternship.toObject();
@@ -245,5 +253,26 @@ export const updateFollowUp = async (req, res) => {
       message: "Failed to update follow-up",
       error: error.message,
     });
+  }
+};
+export const getResume = async (req, res) => {
+  try {
+    const { internshipId } = req.params;
+    
+    const internship = await Internship.findById(internshipId);
+    
+    if (!internship || !internship.resume || !internship.resume.data) {
+      return res.status(404).json({ message: "Resume not found" });
+    }
+    
+    // Set appropriate headers
+    res.setHeader('Content-Type', internship.resume.contentType);
+    res.setHeader('Content-Disposition', `inline; filename="${internship.resume.fileName}"`);
+    
+    // Send the resume data
+    res.send(internship.resume.data);
+  } catch (error) {
+    console.error("Error retrieving resume:", error);
+    res.status(500).json({ message: "Error retrieving resume", error: error.message });
   }
 };
