@@ -16,7 +16,7 @@ const FollowUpNotif = ({ applications, isDark, onDismiss, onMarkDone }) => {
   if (followUps.length === 0) {
     return (
       <div
-        className="h-full rounded-2xl border p-4 transition-all duration-300"
+        className="min-h-[250px] rounded-2xl border p-4 transition-all duration-300"
         style={{
           backgroundColor: colors.card,
           borderColor: colors.border,
@@ -42,7 +42,7 @@ const FollowUpNotif = ({ applications, isDark, onDismiss, onMarkDone }) => {
 
   return (
     <div
-      className="h-full rounded-2xl border p-4 transition-all duration-300 overflow-auto"
+      className="min-h-[230px] rounded-2xl border p-4 transition-all duration-300 overflow-auto"
       style={{
         backgroundColor: colors.card,
         borderColor: colors.border,
