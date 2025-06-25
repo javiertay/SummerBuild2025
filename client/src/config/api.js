@@ -1,6 +1,6 @@
 // API Configuration
 export const API_CONFIG = {
-  RAPIDAPI_KEY: '1e8d146322msh7816517f4bf3f7ep1b4d79jsnc3965463267d',
+  RAPIDAPI_KEY: '9e9e247b07msh696c647c03a6ea2p18de1djsnf292fd35b74b',
   RAPIDAPI_HOST: 'internships-api.p.rapidapi.com',
   BASE_URL: 'https://internships-api.p.rapidapi.com'
 };

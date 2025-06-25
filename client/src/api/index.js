@@ -56,87 +56,87 @@ export const updateFollowUp = (internshipId, payload) =>
 
 // External API functions
 
-// export const getExternalInternships = async () => {
-//   try {
-//     console.log('🔄 Fetching from external API...');
-//     const response = await EXTERNAL_API.get('/active-ats-7d');
-//     console.log('✅ API Response received:', response.status);
+export const getExternalInternships = async () => {
+  try {
+    console.log('🔄 Fetching from external API...');
+    const response = await EXTERNAL_API.get('/active-ats-7d');
+    console.log('✅ API Response received:', response.status);
     
-//     // Handle different response structures
-//     let jobsData = response.data;
-//     console.log('📊 Raw jobs data type:', typeof jobsData, 'Length:', Array.isArray(jobsData) ? jobsData.length : 'Not an array');
+    // Handle different response structures
+    let jobsData = response.data;
+    console.log('📊 Raw jobs data type:', typeof jobsData, 'Length:', Array.isArray(jobsData) ? jobsData.length : 'Not an array');
     
-//     if (jobsData.data) jobsData = jobsData.data;
-//     if (jobsData.jobs) jobsData = jobsData.jobs;
-//     if (jobsData.results) jobsData = jobsData.results;
+    if (jobsData.data) jobsData = jobsData.data;
+    if (jobsData.jobs) jobsData = jobsData.jobs;
+    if (jobsData.results) jobsData = jobsData.results;
     
-//     // Ensure we have an array
-//     if (!Array.isArray(jobsData)) {
-//       console.warn('External API returned non-array data:', jobsData);
-//       return [];
-//     }
+    // Ensure we have an array
+    if (!Array.isArray(jobsData)) {
+      console.warn('External API returned non-array data:', jobsData);
+      return [];
+    }
     
-//     // Transform the data
-//     const transformedJobs = jobsData.map((job, index) => transformExternalJob(job, index));
-//     console.log('🔄 Transformed jobs:', transformedJobs.length);
-//     console.log('📋 Sample transformed job:', transformedJobs[0]);
+    // Transform the data
+    const transformedJobs = jobsData.map((job, index) => transformExternalJob(job, index));
+    console.log('🔄 Transformed jobs:', transformedJobs.length);
+    console.log('📋 Sample transformed job:', transformedJobs[0]);
     
-//     return transformedJobs;
-//   } catch (error) {
-//     console.error('❌ Error fetching external internships:', error);
+    return transformedJobs;
+  } catch (error) {
+    console.error('❌ Error fetching external internships:', error);
     
-//     // Return detailed error info for debugging
-//     if (error.response) {
-//       console.error('API Response Error:', error.response.status, error.response.data);
-//     } else if (error.request) {
-//       console.error('API Request Error:', error.request);
-//     }
+    // Return detailed error info for debugging
+    if (error.response) {
+      console.error('API Response Error:', error.response.status, error.response.data);
+    } else if (error.request) {
+      console.error('API Request Error:', error.request);
+    }
     
-//     throw error;
-//   }
-// };
+    throw error;
+  }
+};
 
 // Disabled external API fetch due to quota limit
-export const getExternalInternships = async () => {
-  console.warn("⚠️ External API call skipped (quota limit reached)");
-  return []; // return empty array to prevent frontend crash
-};
+// export const getExternalInternships = async () => {
+//   console.warn("⚠️ External API call skipped (quota limit reached)");
+//   return []; // return empty array to prevent frontend crash
+// };
 
 
 // // Function to get filtered internships based on skills/preferences
-// export const getRecommendedInternships = async (skills = [], location = '') => {
-//   try {
-//     console.log('🎯 Getting recommended internships with skills:', skills, 'location:', location);
-//     let internships = await getExternalInternships();
-//     console.log('📊 Raw internships count:', internships.length);
-    
-//     // Apply filters
-//     if (skills.length > 0) {
-//       const beforeSkillFilter = internships.length;
-//       internships = filterJobsBySkills(internships, skills);
-//       console.log(`🔍 After skills filter: ${internships.length} (from ${beforeSkillFilter})`);
-//     }
-    
-//     if (location && location !== "All") {
-//       const beforeLocationFilter = internships.length;
-//       internships = filterJobsByLocation(internships, location);
-//       console.log(`📍 After location filter: ${internships.length} (from ${beforeLocationFilter})`);
-//     }
-    
-//     // Sort by date posted (newest first)
-//     internships.sort((a, b) => new Date(b.datePosted) - new Date(a.datePosted));
-    
-//     console.log('✅ Final recommended internships:', internships.length);
-//     return internships;
-//   } catch (error) {
-//     console.error('❌ Error fetching recommended internships:', error);
-//     throw error;
-//   }
-// };
-
 export const getRecommendedInternships = async (skills = [], location = '') => {
-  console.warn("⚠️ getRecommendedInternships is using fallback due to disabled external API");
-  return []; // return empty recommendations
+  try {
+    console.log('🎯 Getting recommended internships with skills:', skills, 'location:', location);
+    let internships = await getExternalInternships();
+    console.log('📊 Raw internships count:', internships.length);
+    
+    // Apply filters
+    if (skills.length > 0) {
+      const beforeSkillFilter = internships.length;
+      internships = filterJobsBySkills(internships, skills);
+      console.log(`🔍 After skills filter: ${internships.length} (from ${beforeSkillFilter})`);
+    }
+    
+    if (location && location !== "All") {
+      const beforeLocationFilter = internships.length;
+      internships = filterJobsByLocation(internships, location);
+      console.log(`📍 After location filter: ${internships.length} (from ${beforeLocationFilter})`);
+    }
+    
+    // Sort by date posted (newest first)
+    internships.sort((a, b) => new Date(b.datePosted) - new Date(a.datePosted));
+    
+    console.log('✅ Final recommended internships:', internships.length);
+    return internships;
+  } catch (error) {
+    console.error('❌ Error fetching recommended internships:', error);
+    throw error;
+  }
 };
+
+// export const getRecommendedInternships = async (skills = [], location = '') => {
+//   console.warn("⚠️ getRecommendedInternships is using fallback due to disabled external API");
+//   return []; // return empty recommendations
+// };
 
 
