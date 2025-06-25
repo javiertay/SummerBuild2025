@@ -287,7 +287,7 @@ const Recommended = () => {
             Recommended Listings
           </h2>
           <p className="text-lg" style={{ color: colors.mutedForeground }}>
-            Based on your internship applications, we’ve curated job suggestions
+            Based on your internship applications, we've curated job suggestions
             tailored to your interests.
           </p>
         </div>
@@ -392,13 +392,20 @@ const Recommended = () => {
         </div>
 
         {/* Tips Based on Activity */}
-        <div className="rounded-xl p-5 mb-10 text-sm" style={{ background: colors.secondary, border: `1px solid ${colors.accent}`, color: colors.cardForeground }}>
+        <div
+          className="rounded-xl p-5 mb-10 text-sm"
+          style={{
+            background: isDark ? colors.card : colors.secondary,
+            border: `1px solid ${colors.accent}`,
+            color: isDark ? colors.foreground : colors.cardForeground,
+          }}
+        >
           <h4 className="font-semibold mb-2" style={{ color: colors.primary }}>
             💡 Tips Based on Your Activity
           </h4>
           <ul className="list-disc pl-6 space-y-1">
             <li>
-              You’re targeting frontend heavily – consider applying to
+              You're targeting frontend heavily – consider applying to
               full-stack roles to widen your scope.
             </li>
             <li>

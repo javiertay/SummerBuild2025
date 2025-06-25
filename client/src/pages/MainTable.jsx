@@ -437,22 +437,21 @@ const InternshipTable = () => {
               {/* Archive Tabs */}
               <div>
                 <div
-                  className="w-full max-w-lg p-1.5 mb-5 mt-5 flex justify-between rounded-2xl transition-all duration-300"
+                  className="w-full max-w-lg p-1.5 mb-5 mt-5 flex justify-between rounded-full transition-all duration-300 border"
                   style={{
-                    backgroundColor: colors.muted,
+                    background: "transparent",
+                    border: `1.5px solid ${colors.border}`,
                     boxShadow: shadows.sm,
                   }}
                 >
                   <button
                     onClick={() => setActiveTab("current")}
-                    className="w-1/2 py-3 text-base font-semibold flex items-center justify-center gap-3 rounded-[10px] transition-all duration-300"
+                    className="w-1/2 py-3 text-base font-semibold flex items-center justify-center gap-3 rounded-full transition-all duration-300"
                     style={{
-                      backgroundColor:
-                        activeTab === "current" ? colors.card : "transparent",
-                      color:
-                        activeTab === "current"
-                          ? colors.foreground
-                          : colors.mutedForeground,
+                      background: activeTab === "current" ? colors.primary : "transparent",
+                      color: activeTab === "current" ? colors.primaryForeground : colors.mutedForeground,
+                      boxShadow: activeTab === "current" ? shadows.glow : "none",
+                      transition: "background 0.2s, color 0.2s, box-shadow 0.2s",
                     }}
                   >
                     <ClockIcon className="h-6 w-6" />
@@ -460,14 +459,12 @@ const InternshipTable = () => {
                   </button>
                   <button
                     onClick={() => setActiveTab("archived")}
-                    className="w-1/2 py-3 text-base font-semibold flex items-center justify-center gap-3 rounded-[10px] transition-all duration-300"
+                    className="w-1/2 py-3 text-base font-semibold flex items-center justify-center gap-3 rounded-full transition-all duration-300"
                     style={{
-                      backgroundColor:
-                        activeTab === "archived" ? colors.card : "transparent",
-                      color:
-                        activeTab === "archived"
-                          ? colors.foreground
-                          : colors.mutedForeground,
+                      background: activeTab === "archived" ? colors.primary : "transparent",
+                      color: activeTab === "archived" ? colors.primaryForeground : colors.mutedForeground,
+                      boxShadow: activeTab === "archived" ? shadows.glow : "none",
+                      transition: "background 0.2s, color 0.2s, box-shadow 0.2s",
                     }}
                   >
                     <ArchiveBoxIcon className="h-6 w-6" />
